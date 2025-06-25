@@ -30,4 +30,14 @@ class Employee extends Model
     {
         return $this->belongsTo(FunctionalPosition::class);
     }
+
+    public function skpAsPegawai()
+    {
+        return $this->hasMany(SkpReport::class, 'pegawai_id');
+    }
+
+    public function skpAsPenilai()
+    {
+        return $this->hasMany(SkpReport::class, 'penilai_id');
+    }
 }

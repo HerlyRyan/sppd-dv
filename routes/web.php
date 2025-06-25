@@ -7,6 +7,7 @@ use App\Http\Controllers\FunctionalPositionController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\LpjHeaderController;
 use App\Http\Controllers\PositionController;
+use App\Http\Controllers\SkpReportController;
 use App\Http\Controllers\SppdController;
 use App\Models\Employee;
 use App\Models\Sppd;
@@ -64,6 +65,14 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('sppd', SppdController::class);
     Route::get('sppd/{sppd}', [SppdController::class, 'buat_surat'])->name('sppd.buat-surat');
     Route::get('sppd/download/{sppd}', [SppdController::class, 'download_surat'])->name('sppd.download-surat');
+
+    // SKP
+    Route::resource('skp', SkpReportController::class)->parameters([
+        'skp' => 'skpReport'
+    ]);
+    Route::get('/skp/{skpReport}/print', [SkpReportController::class, 'download_surat'])->name('skp.print');
+    // Route::get('skp/{skp}', [SkpReportController::class, 'buat_surat'])->name('skp.buat-surat');
+    // Route::get('skp/download/{skp}', [SkpReportController::class, 'download_surat'])->name('skp.download-surat');
 
     // LPJ
     Route::resource('lpj-header', LpjHeaderController::class);

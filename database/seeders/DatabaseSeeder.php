@@ -18,5 +18,7 @@ class DatabaseSeeder extends Seeder
             'username' => 'admin',
             'role' => 'admin'
         ]);
+
+        $this->call(SkpSeeder::class);
     }
 }

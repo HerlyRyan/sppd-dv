@@ -137,6 +137,15 @@
                                 <span class="hide-menu">LPJ</span>
                             </a>
                         </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link <?php echo e(Request::is('skp*') ? 'active' : ''); ?>"
+                                href="<?php echo e(route('skp.index')); ?>" aria-expanded="false">
+                                <span>
+                                    <i class="ti ti-article"></i>
+                                </span>
+                                <span class="hide-menu">SKP</span>
+                            </a>
+                        </li>
                     </ul>
                 </nav>
                 <!-- End Sidebar navigation -->
