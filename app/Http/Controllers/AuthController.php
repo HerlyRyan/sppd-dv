@@ -12,20 +12,47 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    public function login(Request $request){
+    public function login(Request $request)
+    {
         $request->validate([
-            'username' => 'required',
-            'password' => 'required'
+            'username' => 'required|string',
+            'password' => 'required|string',
         ]);
 
-        if (Auth::attempt($request->only('username', 'password'))) {
-            return redirect('/');
+        // Ambil kredensial dari request
+        $credentials = $request->only('username', 'password');
+
+        // Coba autentikasi
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate(); // mencegah session fixation
+
+            $user = Auth::user(); // dapatkan user setelah login
+            // dd($user);
+
+            // Arahkan berdasarkan role
+            switch ($user->role) {
+                case 'admin':
+                    return redirect()->intended('/');
+                case 'pegawai_unit_kerja':
+                case 'pimpinan_unit_kerja':
+                case 'pimpinan_bkn':
+                    return redirect()->intended('/skp');
+                case 'pegawai_bkn':
+                    return redirect()->intended('/buat-surat');
+                default:
+                    Auth::logout();
+                    return back()->withErrors([
+                        'username' => 'Role tidak dikenali.',
+                    ]);
+            }
         }
 
+        // Jika gagal login
         return back()->withErrors([
-            'username' => 'Username or password is incorrect.',
+            'username' => 'Username atau password salah.',
         ])->withInput();
     }
+
 
     public function logout()
     {

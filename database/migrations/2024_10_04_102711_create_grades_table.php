@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('grades', function (Blueprint $table) {
             $table->id();
             $table->string('golongan');
+            $table->bigInteger('gaji_pokok');
+            $table->integer('lama');
             $table->string('pajak');
             $table->timestamps();
         });

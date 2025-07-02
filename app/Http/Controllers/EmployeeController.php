@@ -48,7 +48,7 @@ class EmployeeController extends Controller
             'nip'                       => 'required|unique:employees',
             'npwp'                      => 'required',
             'agency_id'                 => 'required',
-            'functional_position_id'    => 'required',
+            'functional_position_id'    => 'required',            
         ]);
 
         Employee::create($validated);
@@ -56,7 +56,7 @@ class EmployeeController extends Controller
         User::create([
             'username' => $validated['nip'],
             'password' => $validated['nip'],
-            'role'     => 'pegawai'
+            'role'     => $request->role
         ]);
 
         return redirect()->route('employees.index')->with('success', 'Data berhasil disimpan');

@@ -66,7 +66,7 @@
                                 {{-- $pegawaiOptions harus disediakan dari controller, berisi user dengan jabatan bukan kepala bidang --}}
                                 @foreach ($pegawaiOptions as $pegawai)
                                     <option value="{{ $pegawai->id }}" @selected(old('pegawai_id') == $pegawai->id)>
-                                        {{ $pegawai->name }} (NIP: {{ $pegawai->nip }}) - {{ $pegawai->jabatan }}
+                                        {{ $pegawai->nama_pegawai }} (NIP: {{ $pegawai->nip }}) - {{ $pegawai->position->nama_jabatan }}
                                     </option>
                                 @endforeach
                             </select>
@@ -82,7 +82,7 @@
                                 {{-- $penilaiOptions harus disediakan dari controller, berisi user dengan jabatan kepala bidang --}}
                                 @foreach ($penilaiOptions as $penilai)
                                     <option value="{{ $penilai->id }}" @selected(old('penilai_id') == $penilai->id)>
-                                        {{ $penilai->name }} (NIP: {{ $penilai->nip }}) - {{ $penilai->jabatan }}
+                                        {{ $penilai->nama_pegawai }} (NIP: {{ $penilai->nip }}) - {{ $penilai->position->nama_jabatan }}
                                     </option>
                                 @endforeach
                             </select>

@@ -35,118 +35,115 @@
                     <ul id="sidebarnav">
                         <li class="nav-small-cap">
                             <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-                            <span class="hide-menu">Home</span>
+                            <span class="hide-menu">Menu</span>
                         </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link <?php echo e(Request::is('/') ? 'active' : ''); ?>" href="/"
-                                aria-expanded="false">
-                                <span>
-                                    <i class="ti ti-layout-dashboard"></i>
-                                </span>
-                                <span class="hide-menu">Dashboard</span>
-                            </a>
-                        </li>
-                        <?php if(Auth::user()->role == 'admin'): ?>
-                            <li class="nav-small-cap">
-                                <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-                                <span class="hide-menu">Master</span>
-                            </li>
-                            <li class="sidebar-item">
-                                <a class="sidebar-link <?php echo e(Request::is('employees*') ? 'active' : ''); ?>"
-                                    href="<?php echo e(route('employees.index')); ?>" aria-expanded="false">
-                                    <span>
-                                        <i class="ti ti-article"></i>
-                                    </span>
-                                    <span class="hide-menu">Pegawai</span>
-                                </a>
-                            </li>
-                            <li class="sidebar-item">
-                                <a class="sidebar-link <?php echo e(Request::is('positions*') ? 'active' : ''); ?>"
-                                    href="<?php echo e(route('positions.index')); ?>" aria-expanded="false">
-                                    <span>
-                                        <i class="ti ti-article"></i>
-                                    </span>
-                                    <span class="hide-menu">Jabatan</span>
-                                </a>
-                            </li>
-                            <li class="sidebar-item">
-                                <a class="sidebar-link <?php echo e(Request::is('functional-positions*') ? 'active' : ''); ?>"
-                                    href="<?php echo e(route('functional-positions.index')); ?>" aria-expanded="false">
-                                    <span>
-                                        <i class="ti ti-article"></i>
-                                    </span>
-                                    <span class="hide-menu">Jabatan Fungsional</span>
-                                </a>
-                            </li>
-                            <li class="sidebar-item">
-                                <a class="sidebar-link <?php echo e(Request::is('grades*') ? 'active' : ''); ?>"
-                                    href="<?php echo e(route('grades.index')); ?>" aria-expanded="false">
-                                    <span>
-                                        <i class="ti ti-article"></i>
-                                    </span>
-                                    <span class="hide-menu">Golongan</span>
-                                </a>
-                            </li>
-                            <li class="sidebar-item">
-                                <a class="sidebar-link <?php echo e(Request::is('agencies*') ? 'active' : ''); ?>"
-                                    href="<?php echo e(route('agencies.index')); ?>" aria-expanded="false">
-                                    <span>
-                                        <i class="ti ti-article"></i>
-                                    </span>
-                                    <span class="hide-menu">Instansi</span>
-                                </a>
-                            </li>
-                            <li class="sidebar-item">
-                                <a class="sidebar-link <?php echo e(Request::is('surat*') ? 'active' : ''); ?>"
-                                    href="<?php echo e(route('surat.index')); ?>" aria-expanded="false">
-                                    <span>
-                                        <i class="ti ti-article"></i>
-                                    </span>
-                                    <span class="hide-menu">Buat Surat</span>
-                                </a>
-                            </li>
-                            <li class="sidebar-item">
-                                <a class="sidebar-link <?php echo e(Request::is('history*') ? 'active' : ''); ?>"
-                                    href="/history-surat" aria-expanded="false">
-                                    <span>
-                                        <i class="ti ti-article"></i>
-                                    </span>
-                                    <span class="hide-menu">History Surat</span>
-                                </a>
-                            </li>
+
+                        <?php if(auth()->guard()->check()): ?>
+                            <?php
+                                $role = Auth::user()->role;
+                            ?>
+
+                            
+                            <?php if($role === 'admin'): ?>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link <?php echo e(Request::is('/') ? 'active' : ''); ?>" href="/">
+                                        <span><i class="ti ti-layout-dashboard"></i></span>
+                                        <span class="hide-menu">Dashboard</span>
+                                    </a>
+                                </li>
+
+                                <li class="nav-small-cap"><span class="hide-menu">Master</span></li>
+
+                                <li class="sidebar-item"><a
+                                        class="sidebar-link <?php echo e(Request::is('employees*') ? 'active' : ''); ?>"
+                                        href="<?php echo e(route('employees.index')); ?>"><i class="ti ti-user"></i><span
+                                            class="hide-menu">Pegawai</span></a></li>
+                                <li class="sidebar-item"><a
+                                        class="sidebar-link <?php echo e(Request::is('positions*') ? 'active' : ''); ?>"
+                                        href="<?php echo e(route('positions.index')); ?>"><i class="ti ti-briefcase"></i><span
+                                            class="hide-menu">Jabatan</span></a></li>
+                                <li class="sidebar-item"><a
+                                        class="sidebar-link <?php echo e(Request::is('functional-positions*') ? 'active' : ''); ?>"
+                                        href="<?php echo e(route('functional-positions.index')); ?>"><i
+                                            class="ti ti-briefcase"></i></i><span class="hide-menu">Jabatan
+                                            Fungsional</span></a></li>
+                                <li class="sidebar-item"><a
+                                        class="sidebar-link <?php echo e(Request::is('grades*') ? 'active' : ''); ?>"
+                                        href="<?php echo e(route('grades.index')); ?>"><i class="ti ti-award"></i><span
+                                            class="hide-menu">Golongan</span></a></li>
+                                <li class="sidebar-item"><a
+                                        class="sidebar-link <?php echo e(Request::is('agencies*') ? 'active' : ''); ?>"
+                                        href="<?php echo e(route('agencies.index')); ?>"><i class="ti ti-building"></i><span
+                                            class="hide-menu">Instansi</span></a></li>
+
+                                <li class="sidebar-item"><a
+                                        class="sidebar-link <?php echo e(Request::is('surat*') ? 'active' : ''); ?>"
+                                        href="<?php echo e(route('surat.index')); ?>"><i class="ti ti-mail"></i><span
+                                            class="hide-menu">Buat Surat</span></a></li>
+                                <li class="sidebar-item"><a
+                                        class="sidebar-link <?php echo e(Request::is('history*') ? 'active' : ''); ?>"
+                                        href="/history-surat"><i class="ti ti-history"></i><span class="hide-menu">History
+                                            Surat</span></a></li>
+
+                                <li class="nav-small-cap"><span class="hide-menu">SPPD, LPJ, SKP</span></li>
+                                <li class="sidebar-item"><a class="sidebar-link <?php echo e(Request::is('sppd*') ? 'active' : ''); ?>"
+                                        href="<?php echo e(route('sppd.index')); ?>"><i class="ti ti-car"></i><span
+                                            class="hide-menu">SPPD</span></a></li>
+                                <li class="sidebar-item"><a
+                                        class="sidebar-link <?php echo e(Request::is('lpj-header*') ? 'active' : ''); ?>"
+                                        href="<?php echo e(route('lpj-header.index')); ?>"><i class="ti ti-report"></i><span
+                                            class="hide-menu">LPJ</span></a></li>
+                                <li class="sidebar-item"><a
+                                        class="sidebar-link <?php echo e(Request::is('skp*') ? 'active' : ''); ?>"
+                                        href="<?php echo e(route('skp.index')); ?>"><i class="ti ti-report"></i><span
+                                            class="hide-menu">SKP</span></a></li>
+                            <?php endif; ?>
+
+                            
+                            <?php if($role === 'pegawai_unit_kerja'): ?>
+                                <li class="sidebar-item"><a class="sidebar-link <?php echo e(Request::is('skp*') ? 'active' : ''); ?>"
+                                        href="<?php echo e(route('skp.index')); ?>"><i class="ti ti-clipboard-check"></i><span
+                                            class="hide-menu">SKP Saya</span></a></li>
+                            <?php endif; ?>
+
+                            
+                            <?php if($role === 'pimpinan_unit_kerja'): ?>
+                                <li class="sidebar-item"><a
+                                        class="sidebar-link <?php echo e(Request::is('skp*') ? 'active' : ''); ?>"
+                                        href="<?php echo e(route('skp.index')); ?>"><i class="ti ti-checkup-list"></i><span
+                                            class="hide-menu">Penilaian SKP Unit</span></a></li>
+                            <?php endif; ?>
+
+                            
+                            <?php if($role === 'pimpinan_bkn'): ?>
+                                <li class="sidebar-item"><a
+                                        class="sidebar-link <?php echo e(Request::is('skp*') ? 'active' : ''); ?>"
+                                        href="<?php echo e(route('skp.index')); ?>"><i class="ti ti-file-description"></i><span
+                                            class="hide-menu">Semua Penilaian SKP</span></a></li>
+                            <?php endif; ?>
+
+                            
+                            <?php if($role === 'pegawai_bkn'): ?>
+                                <li class="sidebar-item"><a
+                                        class="sidebar-link <?php echo e(Request::is('surat*') ? 'active' : ''); ?>"
+                                        href="<?php echo e(route('surat.index')); ?>"><i class="ti ti-mail-fast"></i><span
+                                            class="hide-menu">Buat Surat</span></a></li>
+                                <li class="sidebar-item"><a
+                                        class="sidebar-link <?php echo e(Request::is('history*') ? 'active' : ''); ?>"
+                                        href="/history-surat"><i class="ti ti-history"></i><span
+                                            class="hide-menu">History Surat</span></a></li>
+                                <li class="sidebar-item"><a
+                                        class="sidebar-link <?php echo e(Request::is('sppd*') ? 'active' : ''); ?>"
+                                        href="<?php echo e(route('sppd.index')); ?>"><i class="ti ti-car"></i><span
+                                            class="hide-menu">SPPD</span></a></li>
+                                <li class="sidebar-item"><a
+                                        class="sidebar-link <?php echo e(Request::is('lpj-header*') ? 'active' : ''); ?>"
+                                        href="<?php echo e(route('lpj-header.index')); ?>"><i class="ti ti-file-report"></i><span
+                                            class="hide-menu">LPJ</span></a></li>
+                            <?php endif; ?>
                         <?php endif; ?>
-                        <li class="nav-small-cap">
-                            <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-                            <span class="hide-menu">SPPD & LPJ</span>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link <?php echo e(Request::is('sppd*') ? 'active' : ''); ?>"
-                                href="<?php echo e(route('sppd.index')); ?>" aria-expanded="false">
-                                <span>
-                                    <i class="ti ti-article"></i>
-                                </span>
-                                <span class="hide-menu">SPPD</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link <?php echo e(Request::is('lpj-header*') ? 'active' : ''); ?>"
-                                href="<?php echo e(route('lpj-header.index')); ?>" aria-expanded="false">
-                                <span>
-                                    <i class="ti ti-article"></i>
-                                </span>
-                                <span class="hide-menu">LPJ</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link <?php echo e(Request::is('skp*') ? 'active' : ''); ?>"
-                                href="<?php echo e(route('skp.index')); ?>" aria-expanded="false">
-                                <span>
-                                    <i class="ti ti-article"></i>
-                                </span>
-                                <span class="hide-menu">SKP</span>
-                            </a>
-                        </li>
                     </ul>
+
                 </nav>
                 <!-- End Sidebar navigation -->
             </div>
@@ -170,7 +167,6 @@
                                     aria-labelledby="drop2">
                                     <div class="message-body">
                                         <div class="d-flex align-items-center gap-2 dropdown-item">
-
                                             <p class="mb-0 fs-3">
                                                 <?php echo e(Auth::user()->username); ?>
 

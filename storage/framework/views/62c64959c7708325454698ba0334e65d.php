@@ -114,7 +114,7 @@ unset($__errorArgs, $__bag); ?>" required>
                                 
                                 <?php $__currentLoopData = $pegawaiOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $pegawai): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <option value="<?php echo e($pegawai->id); ?>" <?php if(old('pegawai_id') == $pegawai->id): echo 'selected'; endif; ?>>
-                                        <?php echo e($pegawai->name); ?> (NIP: <?php echo e($pegawai->nip); ?>) - <?php echo e($pegawai->jabatan); ?>
+                                        <?php echo e($pegawai->nama_pegawai); ?> (NIP: <?php echo e($pegawai->nip); ?>) - <?php echo e($pegawai->position->nama_jabatan); ?>
 
                                     </option>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -145,7 +145,7 @@ unset($__errorArgs, $__bag); ?>" required>
                                 
                                 <?php $__currentLoopData = $penilaiOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $penilai): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <option value="<?php echo e($penilai->id); ?>" <?php if(old('penilai_id') == $penilai->id): echo 'selected'; endif; ?>>
-                                        <?php echo e($penilai->name); ?> (NIP: <?php echo e($penilai->nip); ?>) - <?php echo e($penilai->jabatan); ?>
+                                        <?php echo e($penilai->nama_pegawai); ?> (NIP: <?php echo e($penilai->nip); ?>) - <?php echo e($penilai->position->nama_jabatan); ?>
 
                                     </option>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>

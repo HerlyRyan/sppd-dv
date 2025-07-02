@@ -24,15 +24,34 @@ class SkpReportController extends Controller
      */
     public function index()
     {
-        $skpReports = SkpReport::with([
+        $user = auth()->user();
+
+        $query = SkpReport::with([
             'pegawai.position',
             'penilai.position',
             'workResults.performanceIndicators',
             'workBehaviors',
             'supportingResources',
             'accountabilities',
-            'consequences'
-        ])->get();
+            'consequences',
+            'pegawai.agency',
+        ]);
+
+        // Jika bukan admin atau pimpinan_bkn, filter berdasarkan agency dari employee yang sesuai nip
+        if (!in_array($user->role, ['admin', 'pimpinan_bkn'])) {
+            $pegawai = Employee::where('nip', $user->username)->first();
+
+            if ($pegawai && $pegawai->agency_id) {
+                $query->whereHas('pegawai', function ($q) use ($pegawai) {
+                    $q->where('agency_id', $pegawai->agency_id);
+                });
+            } else {
+                // Jika pegawai tidak ditemukan atau tidak punya agency, kosongkan hasil
+                $query->whereRaw('1 = 0');
+            }
+        }
+
+        $skpReports = $query->get();
 
         return view('skp_reports.index', compact('skpReports'));
     }
@@ -218,7 +237,7 @@ class SkpReportController extends Controller
             'supportingResources',
             'accountabilities',
             'consequences'
-        ]);        
+        ]);
 
         // Mendapatkan ID posisi yang mengandung kata "KETUA"
         $kepalaPosisiIds = Position::where('nama_jabatan', 'LIKE', '%KETUA%')->pluck('id');
@@ -376,7 +395,7 @@ class SkpReportController extends Controller
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Gagal menghapus laporan SKP. Pesan kesalahan: ' . $e->getMessage()]);
         }
-    }    
+    }
 
     public function download_surat(SkpReport $skpReport)
     {

@@ -3,14 +3,15 @@
         <div class="card-header">
             <div class="row">
                 <div class="col">
-                    Tambah Data
+                    Edit Data
                 </div>
             </div>
         </div>
         <div class="card-body">
-            <form action="<?php echo e(route('employees.store')); ?>" method="POST">
+            <form action="<?php echo e(route('employees.update', $employee)); ?>" method="POST">
                 <div class="row gap-3">
                     <?php echo csrf_field(); ?>
+                    <?php echo method_field('put'); ?>
                     <div class="col-12">
                         <label for="nama_pegawai" class="form-label">Nama Pegawai</label>
                         <input type="text" class="form-control <?php $__errorArgs = ['nama_pegawai'];
@@ -21,7 +22,8 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                            id="nama_pegawai" name="nama_pegawai" value="<?php echo e(old('nama_pegawai')); ?>">
+                            id="nama_pegawai" name="nama_pegawai"
+                            value="<?php echo e(old('nama_pegawai', $employee->nama_pegawai)); ?>">
 
                         <?php $__errorArgs = ['nama_pegawai'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -48,7 +50,7 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" id="nip"
-                            name="nip" value="<?php echo e(old('nip')); ?>">
+                            name="nip" value="<?php echo e(old('nip', $employee->nip)); ?>">
 
                         <?php $__errorArgs = ['nip'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -74,8 +76,8 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>" id="npwp"
-                            name="npwp" value="<?php echo e(old('npwp')); ?>">
+unset($__errorArgs, $__bag); ?>"
+                            id="npwp" name="npwp" value="<?php echo e(old('npwp', $employee->npwp)); ?>">
 
                         <?php $__errorArgs = ['npwp'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -103,8 +105,8 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>">
-                            <option value="L" <?php if(old('jenis_kelamin') == 'L'): echo 'selected'; endif; ?>>Laki-laki</option>
-                            <option value="P" <?php if(old('jenis_kelamin') == 'P'): echo 'selected'; endif; ?>>Perempuan</option>
+                            <option value="L" <?php if(old('jenis_kelamin', $employee->jenis_kelamin) == 'L'): echo 'selected'; endif; ?>>Laki-laki</option>
+                            <option value="P" <?php if(old('jenis_kelamin', $employee->jenis_kelamin) == 'P'): echo 'selected'; endif; ?>>Perempuan</option>
                         </select>
 
                         <?php $__errorArgs = ['jenis_kelamin'];
@@ -134,7 +136,7 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>">
                             <?php $__currentLoopData = $positions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $position): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <option value="<?php echo e($position->id); ?>" <?php if(old('position_id') == $position->id): echo 'selected'; endif; ?>>
+                                <option value="<?php echo e($position->id); ?>" <?php if(old('position_id', $employee->position_id) == $position->id): echo 'selected'; endif; ?>>
                                     <?php echo e($position->nama_jabatan); ?>
 
                                 </option>
@@ -235,7 +237,7 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>">
                             <?php $__currentLoopData = $grades; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $grade): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <option value="<?php echo e($grade->id); ?>" <?php if(old('grade_id') == $grade->id): echo 'selected'; endif; ?>>
+                                <option value="<?php echo e($grade->id); ?>" <?php if(old('grade_id', $employee->grade_id) == $grade->id): echo 'selected'; endif; ?>>
                                     <?php echo e($grade->golongan); ?> (<?php echo e($grade->pajak); ?>%) | <?php echo e($grade->lama); ?> tahun
                                 </option>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -266,42 +268,11 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>">
-                            <option value="aktif" <?php if(old('status') == 'aktif'): echo 'selected'; endif; ?>>Aktif</option>
-                            <option value="nonaktif" <?php if(old('status') == 'nonaktif'): echo 'selected'; endif; ?>>Nonaktif</option>
+                            <option value="aktif" <?php if(old('status', $employee->status) == 'aktif'): echo 'selected'; endif; ?>>Aktif</option>
+                            <option value="nonaktif" <?php if(old('status', $employee->status) == 'nonaktif'): echo 'selected'; endif; ?>>Nonaktif</option>
                         </select>
 
                         <?php $__errorArgs = ['status'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                            <div class="invalid-feedback">
-                                <?php echo e($message); ?>
-
-                            </div>
-                        <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-                    </div>
-
-                    <div class="col-12">
-                        <label for="role" class="form-label">Role User</label>
-                        <select name="role" id="role" class="form-select <?php $__errorArgs = ['role'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>">
-                            <option value="pegawai_unit_kerja" <?php if(old('role') == 'pegawai_unit_kerja'): echo 'selected'; endif; ?>>Pegawai Unit Kerja</option>
-                            <option value="pegawai_bkn" <?php if(old('role') == 'pegawai_bkn'): echo 'selected'; endif; ?>>Pegawai BKN</option>
-                            <option value="pimpinan_unit_kerja" <?php if(old('role') == 'pimpinan_unit_kerja'): echo 'selected'; endif; ?>>Pimpinan Unit Kerja</option>
-                            <option value="pimpinan_bkn" <?php if(old('role') == 'pimpinan_bkn'): echo 'selected'; endif; ?>>Pimpinan BKN</option>
-                        </select>
-
-                        <?php $__errorArgs = ['role'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -325,4 +296,4 @@ unset($__errorArgs, $__bag); ?>
     </div>
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\devi\resources\views/pegawai/create.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\devi\resources\views/pegawai/edit.blade.php ENDPATH**/ ?>
