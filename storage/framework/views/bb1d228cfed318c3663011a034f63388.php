@@ -1,14 +1,19 @@
 <?php $__env->startSection('content'); ?>
     <div class="container py-4">
-        <div class="card shadow-sm">            
+        <div class="card shadow-sm">
             <div class="card-header">
                 <div class="row">
                     <div class="col">
                         Data Laporan Sasaran Kinerja Pegawai (SKP)
                     </div>
-                    <div class="col d-flex justify-content-end">
-                        <a href="<?php echo e(route('skp.create')); ?>" class="btn btn-primary">Tambah Data</a>
-                    </div>
+                    <?php
+                        $role = Auth::user()->role;
+                    ?>
+                    <?php if($role === 'admin' || $role === 'pegawai_unit_kerja'): ?>
+                        <div class="col d-flex justify-content-end">
+                            <a href="<?php echo e(route('skp.create')); ?>" class="btn btn-primary">Tambah Data</a>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -37,31 +42,37 @@
                         <tbody>
                             <?php if($skpReports->isEmpty()): ?>
                                 <tr>
-                                    <td colspan="7" class="text-center text-muted py-4">Tidak ada data laporan SKP. Silakan tambahkan data baru.</td>
+                                    <td colspan="7" class="text-center text-muted py-4">Tidak ada data laporan SKP.
+                                        Silakan tambahkan data baru.</td>
                                 </tr>
                             <?php else: ?>
                                 <?php $__currentLoopData = $skpReports; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $skpReport): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <tr>
                                         <td><?php echo e($index + 1); ?></td>
                                         <td><?php echo e($skpReport->pegawai->nama_pegawai ?? 'N/A'); ?></td> 
-                                        <td><?php echo e($skpReport->pegawai->nip ?? 'N/A'); ?></td>    
-                                        <td><?php echo e($skpReport->pegawai->position->nama_jabatan ?? 'N/A'); ?></td> 
+                                        <td><?php echo e($skpReport->pegawai->nip ?? 'N/A'); ?></td> 
+                                        <td><?php echo e($skpReport->pegawai->position->nama_jabatan ?? 'N/A'); ?></td>
+                                        
                                         <td>
                                             <?php echo e(\Carbon\Carbon::parse($skpReport->periode_mulai)->format('d/m/Y')); ?> -
                                             <?php echo e(\Carbon\Carbon::parse($skpReport->periode_selesai)->format('d/m/Y')); ?>
 
                                         </td>
-                                        <td><?php echo e($skpReport->penilai->nama_pegawai ?? 'N/A'); ?></td>     
+                                        <td><?php echo e($skpReport->penilai->nama_pegawai ?? 'N/A'); ?></td> 
                                         <td class="d-flex gap-1 justify-content-center" style="white-space: nowrap">
-                                            <a href="<?php echo e(route('skp.show', $skpReport->id)); ?>" class="btn btn-sm btn-warning" target="_blank" title="Lihat Detail">
+                                            <a href="<?php echo e(route('skp.show', $skpReport->id)); ?>" class="btn btn-sm btn-warning"
+                                                target="_blank" title="Lihat Detail">
                                                 <i class="bi bi-eye"></i> Lihat
                                             </a>
                                             
-                                            <a href="<?php echo e(route('skp.print', $skpReport->id)); ?>" class="btn btn-sm btn-success" target="_blank">Cetak</a>
-                                            <a href="<?php echo e(route('skp.edit', $skpReport->id)); ?>" class="btn btn-sm btn-info" title="Edit Data">
+                                            <a href="<?php echo e(route('skp.print', $skpReport->id)); ?>"
+                                                class="btn btn-sm btn-success" target="_blank">Cetak</a>
+                                            <a href="<?php echo e(route('skp.edit', $skpReport->id)); ?>" class="btn btn-sm btn-info"
+                                                title="Edit Data">
                                                 <i class="bi bi-pencil-square"></i> Edit
                                             </a>
-                                            <form action="<?php echo e(route('skp.destroy', $skpReport->id)); ?>" method="POST" onsubmit="return confirm('Yakin ingin menghapus data laporan SKP ini? Tindakan ini tidak dapat dibatalkan.');">
+                                            <form action="<?php echo e(route('skp.destroy', $skpReport->id)); ?>" method="POST"
+                                                onsubmit="return confirm('Yakin ingin menghapus data laporan SKP ini? Tindakan ini tidak dapat dibatalkan.');">
                                                 <?php echo csrf_field(); ?>
                                                 <?php echo method_field('DELETE'); ?>
                                                 <button type="submit" class="btn btn-sm btn-danger" title="Hapus Data">

@@ -33,6 +33,10 @@
                     <?php echo csrf_field(); ?>
                     <?php echo method_field('PUT'); ?>
 
+                    <?php
+                        $role = Auth::user()->role;
+                    ?>
+
                     
                     <div class="row mb-4 border-bottom pb-3">
                         <h5 class="mb-3 text-primary">Informasi Umum Laporan SKP</h5>
@@ -47,7 +51,8 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
                                 id="periode_mulai" name="periode_mulai"
-                                value="<?php echo e(old('periode_mulai', $skpReport->periode_mulai->format('Y-m-d'))); ?>" required>
+                                value="<?php echo e(old('periode_mulai', $skpReport->periode_mulai->format('Y-m-d'))); ?>"
+                                <?php echo e($role !== 'admin' && $role !== 'pegawai_unit_kerja' ? 'readonly' : ''); ?> required>
                             <?php $__errorArgs = ['periode_mulai'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -70,7 +75,8 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
                                 id="periode_selesai" name="periode_selesai"
-                                value="<?php echo e(old('periode_selesai', $skpReport->periode_selesai->format('Y-m-d'))); ?>" required>
+                                value="<?php echo e(old('periode_selesai', $skpReport->periode_selesai->format('Y-m-d'))); ?>"
+                                <?php echo e($role !== 'admin' && $role !== 'pegawai_unit_kerja' ? 'readonly' : ''); ?> required>
                             <?php $__errorArgs = ['periode_selesai'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -94,7 +100,7 @@ endif;
 unset($__errorArgs, $__bag); ?>"
                                 id="tanggal_penilaian" name="tanggal_penilaian"
                                 value="<?php echo e(old('tanggal_penilaian', $skpReport->tanggal_penilaian->format('Y-m-d'))); ?>"
-                                required>
+                                <?php echo e($role !== 'admin' && $role !== 'pegawai_unit_kerja' ? 'readonly' : ''); ?> required>
                             <?php $__errorArgs = ['tanggal_penilaian'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -108,8 +114,9 @@ unset($__errorArgs, $__bag); ?>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="pegawai_id" class="form-label">Pegawai Yang Dinilai</label>
-                            <select name="pegawai_id" id="pegawai_id"
-                                class="form-select <?php $__errorArgs = ['pegawai_id'];
+                            <?php if($role === 'admin' || $role === 'pegawai_unit_kerja'): ?>
+                                <select name="pegawai_id" id="pegawai_id"
+                                    class="form-select <?php $__errorArgs = ['pegawai_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -117,15 +124,19 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" required>
-                                <option value="">-- Pilih Pegawai --</option>
-                                <?php $__currentLoopData = $pegawaiOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $pegawai): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <option value="<?php echo e($pegawai->id); ?>" <?php if(old('pegawai_id', $skpReport->pegawai_id) == $pegawai->id): echo 'selected'; endif; ?>>
-                                        <?php echo e($pegawai->nama_pegawai); ?> (NIP: <?php echo e($pegawai->nip); ?>) -
-                                        <?php echo e($pegawai->position->nama_jabatan ?? 'N/A'); ?>
+                                    <option value="">-- Pilih Pegawai --</option>
+                                    <?php $__currentLoopData = $pegawaiOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $pegawai): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <option value="<?php echo e($pegawai->id); ?>" <?php if(old('pegawai_id', $skpReport->pegawai_id) == $pegawai->id): echo 'selected'; endif; ?>>
+                                            <?php echo e($pegawai->nama_pegawai); ?> (NIP: <?php echo e($pegawai->nip); ?>) -
+                                            <?php echo e($pegawai->position->nama_jabatan ?? 'N/A'); ?>
 
-                                    </option>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                            </select>
+                                        </option>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </select>
+                            <?php else: ?>
+                                <input type="hidden" name="pegawai_id" value="<?php echo e($skpReport->pegawai_id); ?>">
+                                <input type="text" class="form-control" value="<?php echo e($skpReport->pegawai->nama_pegawai ?? ''); ?> (NIP: <?php echo e($skpReport->pegawai->nip ?? ''); ?>) - <?php echo e($skpReport->pegawai->position->nama_jabatan ?? 'N/A'); ?>" readonly>
+                            <?php endif; ?>
                             <?php $__errorArgs = ['pegawai_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -147,10 +158,11 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>" required>
+unset($__errorArgs, $__bag); ?>"
+                                <?php echo e($role !== 'admin' && $role !== 'pegawai_unit_kerja' ? 'readonly' : ''); ?> required>
                                 <option value="">-- Pilih Penilai --</option>
                                 <?php $__currentLoopData = $penilaiOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $penilai): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <option value="<?php echo e($penilai->id); ?>" <?php if(old('penilai_id', $skpReport->penilai_id) == $penilai->id): echo 'selected'; endif; ?>>
+                                    <option value="<?php echo e($penilai->id); ?>" <?php if(old('penilai_id', $skpReport->penilai_id) == $penilai->id): echo 'selected'; endif; ?> >
                                         <?php echo e($penilai->nama_pegawai); ?> (NIP: <?php echo e($penilai->nip); ?>) -
                                         <?php echo e($penilai->position->nama_jabatan ?? 'N/A'); ?>
 

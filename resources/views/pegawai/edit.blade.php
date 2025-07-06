@@ -41,8 +41,8 @@
 
                     <div class="col-12">
                         <label for="npwp" class="form-label">NPWP</label>
-                        <input type="text" class="form-control @error('npwp') is-invalid @enderror"
-                            id="npwp" name="npwp" value="{{ old('npwp', $employee->npwp) }}">
+                        <input type="text" class="form-control @error('npwp') is-invalid @enderror" id="npwp"
+                            name="npwp" value="{{ old('npwp', $employee->npwp) }}">
 
                         @error('npwp')
                             <div class="invalid-feedback">
@@ -107,7 +107,7 @@
                         <select name="agency_id" id="agency_id"
                             class="form-select @error('agency_id') is-invalid @enderror">
                             @foreach ($agencies as $agency)
-                                <option value="{{ $agency->id }}" @selected(old('agency_id') == $agency->id)>
+                                <option value="{{ $agency->id }}" @selected(old('agency_id', $agency->id) == $agency->id)>
                                     {{ $agency->instansi }}
                                 </option>
                             @endforeach
@@ -125,7 +125,7 @@
                         <select name="grade_id" id="grade_id" class="form-select @error('grade_id') is-invalid @enderror">
                             @foreach ($grades as $grade)
                                 <option value="{{ $grade->id }}" @selected(old('grade_id', $employee->grade_id) == $grade->id)>
-                                    {{ $grade->golongan }} ({{ $grade->pajak }}%) | {{$grade->lama}} tahun
+                                    {{ $grade->golongan }} ({{ $grade->pajak }}%) | {{ $grade->lama }} tahun
                                 </option>
                             @endforeach
                         </select>
@@ -145,6 +145,22 @@
                         </select>
 
                         @error('status')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+
+                    <div class="col-12">
+                        <label for="role" class="form-label">Role User</label>
+                        <select name="role" id="role" class="form-select @error('role') is-invalid @enderror">
+                            <option value="pegawai_unit_kerja" @selected(old('role', $selected_role) == 'pegawai_unit_kerja')>Pegawai Unit Kerja</option>
+                            <option value="pegawai_bkn" @selected(old('role', $selected_role) == 'pegawai_bkn')>Pegawai BKN</option>
+                            <option value="pimpinan_unit_kerja" @selected(old('role', $selected_role) == 'pimpinan_unit_kerja')>Pimpinan Unit Kerja</option>
+                            <option value="pimpinan_bkn" @selected(old('role', $selected_role) == 'pimpinan_bkn')>Pimpinan BKN</option>
+                        </select>
+
+                        @error('role')
                             <div class="invalid-feedback">
                                 {{ $message }}
                             </div>

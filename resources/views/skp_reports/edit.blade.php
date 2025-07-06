@@ -32,6 +32,10 @@
                     @csrf
                     @method('PUT')
 
+                    @php
+                        $role = Auth::user()->role;
+                    @endphp
+
                     {{-- Bagian Informasi Utama SKP --}}
                     <div class="row mb-4 border-bottom pb-3">
                         <h5 class="mb-3 text-primary">Informasi Umum Laporan SKP</h5>
@@ -39,7 +43,8 @@
                             <label for="periode_mulai" class="form-label">Periode Penilaian Mulai</label>
                             <input type="date" class="form-control @error('periode_mulai') is-invalid @enderror"
                                 id="periode_mulai" name="periode_mulai"
-                                value="{{ old('periode_mulai', $skpReport->periode_mulai->format('Y-m-d')) }}" required>
+                                value="{{ old('periode_mulai', $skpReport->periode_mulai->format('Y-m-d')) }}"
+                                {{ $role !== 'admin' && $role !== 'pegawai_unit_kerja' ? 'readonly' : '' }} required>
                             @error('periode_mulai')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -48,7 +53,8 @@
                             <label for="periode_selesai" class="form-label">Periode Penilaian Selesai</label>
                             <input type="date" class="form-control @error('periode_selesai') is-invalid @enderror"
                                 id="periode_selesai" name="periode_selesai"
-                                value="{{ old('periode_selesai', $skpReport->periode_selesai->format('Y-m-d')) }}" required>
+                                value="{{ old('periode_selesai', $skpReport->periode_selesai->format('Y-m-d')) }}"
+                                {{ $role !== 'admin' && $role !== 'pegawai_unit_kerja' ? 'readonly' : '' }} required>
                             @error('periode_selesai')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -58,23 +64,28 @@
                             <input type="date" class="form-control @error('tanggal_penilaian') is-invalid @enderror"
                                 id="tanggal_penilaian" name="tanggal_penilaian"
                                 value="{{ old('tanggal_penilaian', $skpReport->tanggal_penilaian->format('Y-m-d')) }}"
-                                required>
+                                {{ $role !== 'admin' && $role !== 'pegawai_unit_kerja' ? 'readonly' : '' }} required>
                             @error('tanggal_penilaian')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="pegawai_id" class="form-label">Pegawai Yang Dinilai</label>
-                            <select name="pegawai_id" id="pegawai_id"
-                                class="form-select @error('pegawai_id') is-invalid @enderror" required>
-                                <option value="">-- Pilih Pegawai --</option>
-                                @foreach ($pegawaiOptions as $pegawai)
-                                    <option value="{{ $pegawai->id }}" @selected(old('pegawai_id', $skpReport->pegawai_id) == $pegawai->id)>
-                                        {{ $pegawai->nama_pegawai }} (NIP: {{ $pegawai->nip }}) -
-                                        {{ $pegawai->position->nama_jabatan ?? 'N/A' }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            @if($role === 'admin' || $role === 'pegawai_unit_kerja')
+                                <select name="pegawai_id" id="pegawai_id"
+                                    class="form-select @error('pegawai_id') is-invalid @enderror" required>
+                                    <option value="">-- Pilih Pegawai --</option>
+                                    @foreach ($pegawaiOptions as $pegawai)
+                                        <option value="{{ $pegawai->id }}" @selected(old('pegawai_id', $skpReport->pegawai_id) == $pegawai->id)>
+                                            {{ $pegawai->nama_pegawai }} (NIP: {{ $pegawai->nip }}) -
+                                            {{ $pegawai->position->nama_jabatan ?? 'N/A' }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            @else
+                                <input type="hidden" name="pegawai_id" value="{{ $skpReport->pegawai_id }}">
+                                <input type="text" class="form-control" value="{{ $skpReport->pegawai->nama_pegawai ?? '' }} (NIP: {{ $skpReport->pegawai->nip ?? '' }}) - {{ $skpReport->pegawai->position->nama_jabatan ?? 'N/A' }}" readonly>
+                            @endif
                             @error('pegawai_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -82,10 +93,11 @@
                         <div class="col-md-6 mb-3">
                             <label for="penilai_id" class="form-label">Pejabat Penilai Kinerja</label>
                             <select name="penilai_id" id="penilai_id"
-                                class="form-select @error('penilai_id') is-invalid @enderror" required>
+                                class="form-select @error('penilai_id') is-invalid @enderror"
+                                {{ $role !== 'admin' && $role !== 'pegawai_unit_kerja' ? 'readonly' : '' }} required>
                                 <option value="">-- Pilih Penilai --</option>
                                 @foreach ($penilaiOptions as $penilai)
-                                    <option value="{{ $penilai->id }}" @selected(old('penilai_id', $skpReport->penilai_id) == $penilai->id)>
+                                    <option value="{{ $penilai->id }}" @selected(old('penilai_id', $skpReport->penilai_id) == $penilai->id) >
                                         {{ $penilai->nama_pegawai }} (NIP: {{ $penilai->nip }}) -
                                         {{ $penilai->position->nama_jabatan ?? 'N/A' }}
                                     </option>

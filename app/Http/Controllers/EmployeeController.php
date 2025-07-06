@@ -67,12 +67,15 @@ class EmployeeController extends Controller
      */
     public function edit(Employee $employee)
     {
+        $user = User::where('username', $employee->nip)->first();
+        
         return view('pegawai.edit', [
             'grades'    => Grade::all(),
             'positions' => Position::all(),
             'agencies'  => Agency::all(),
             'employee'  => $employee,
             'functional_positions' => FunctionalPosition::all(),
+            'selected_role' => $user ? $user->role : null,
         ]);
     }
 
@@ -87,13 +90,26 @@ class EmployeeController extends Controller
             'grade_id'      => 'required',
             'jenis_kelamin' => 'required',
             'status'        => 'required',
-            'nip'           => 'required|unique:employees,nip,' .  $employee->id,
+            'nip'           => 'required|unique:employees,nip,' . $employee->id,
             'npwp'          => 'required',
             'agency_id'     => 'required',
-            'functional_position_id'    => 'required',
+            'functional_position_id' => 'required',
         ]);
 
+        // Get the old NIP before update
+        $oldNip = $employee->nip;
+        
+        // Update employee data
         $employee->update($validated);
+
+        // Update user role and username if NIP changed
+        $user = User::where('username', $oldNip)->first();
+        
+        if ($user) {
+            $user->username = $validated['nip']; // Update username if NIP changed
+            $user->role = $request->role; // Update role
+            $user->save();
+        }
 
         return redirect()->route('employees.index')->with('success', 'Data berhasil disimpan');
     }

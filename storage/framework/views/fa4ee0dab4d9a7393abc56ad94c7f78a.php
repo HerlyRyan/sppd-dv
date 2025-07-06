@@ -76,8 +76,8 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>"
-                            id="npwp" name="npwp" value="<?php echo e(old('npwp', $employee->npwp)); ?>">
+unset($__errorArgs, $__bag); ?>" id="npwp"
+                            name="npwp" value="<?php echo e(old('npwp', $employee->npwp)); ?>">
 
                         <?php $__errorArgs = ['npwp'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -204,7 +204,7 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>">
                             <?php $__currentLoopData = $agencies; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $agency): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <option value="<?php echo e($agency->id); ?>" <?php if(old('agency_id') == $agency->id): echo 'selected'; endif; ?>>
+                                <option value="<?php echo e($agency->id); ?>" <?php if(old('agency_id', $agency->id) == $agency->id): echo 'selected'; endif; ?>>
                                     <?php echo e($agency->instansi); ?>
 
                                 </option>
@@ -273,6 +273,37 @@ unset($__errorArgs, $__bag); ?>">
                         </select>
 
                         <?php $__errorArgs = ['status'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <div class="invalid-feedback">
+                                <?php echo e($message); ?>
+
+                            </div>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                    </div>
+
+                    <div class="col-12">
+                        <label for="role" class="form-label">Role User</label>
+                        <select name="role" id="role" class="form-select <?php $__errorArgs = ['role'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+                            <option value="pegawai_unit_kerja" <?php if(old('role', $selected_role) == 'pegawai_unit_kerja'): echo 'selected'; endif; ?>>Pegawai Unit Kerja</option>
+                            <option value="pegawai_bkn" <?php if(old('role', $selected_role) == 'pegawai_bkn'): echo 'selected'; endif; ?>>Pegawai BKN</option>
+                            <option value="pimpinan_unit_kerja" <?php if(old('role', $selected_role) == 'pimpinan_unit_kerja'): echo 'selected'; endif; ?>>Pimpinan Unit Kerja</option>
+                            <option value="pimpinan_bkn" <?php if(old('role', $selected_role) == 'pimpinan_bkn'): echo 'selected'; endif; ?>>Pimpinan BKN</option>
+                        </select>
+
+                        <?php $__errorArgs = ['role'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
