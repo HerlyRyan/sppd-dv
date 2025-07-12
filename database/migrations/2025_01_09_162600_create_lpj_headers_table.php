@@ -14,11 +14,12 @@ return new class extends Migration
         Schema::create('lpj_headers', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('sppd_id')->constrained('sppds');
-            $table->enum('submission_flag', ['Y', 'N']);
+            $table->foreignId('sppd_id')->constrained('sppds');            
+            $table->enum('submission_flag', ['Y', 'N'])->default('N');
             $table->timestamp('submission_date')->nullable();
-            $table->enum('approval_status', ['Y', 'N']);
+            $table->enum('approval_status', ['Y', 'Y1', 'N', 'R'])->default('N');
             $table->timestamp('approval_date')->nullable();
+            $table->string('reject_reason')->nullable();
             $table->timestamps();
         });
     }

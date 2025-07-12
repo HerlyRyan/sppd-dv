@@ -28,10 +28,12 @@
                             <th>Pegawai</th>
                             <th>Anggaran Biaya SPPD</th>
                             <th>Biaya rill</th>
+                            <th>Bukti LPJ</th>
                             <th>Submission</th>
                             <th>Submission Date</th>
                             <th>Status Approval</th>
                             <th>Approval / Reject Date</th>
+                            <th>Alasan Ditolak</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -51,21 +53,70 @@
                                         <?php echo e(number_format(\App\Http\Controllers\LpjHeaderController::cek_biaya_rill($item->id), 0, ',', '.')); ?>
 
                                     </td>
-                                    <td><?php echo e($item->submission_flag); ?></td>
+                                    <td>
+                                        <?php if($item->lpjDetail?->bukti_lpj): ?>
+                                            <a href="<?php echo e(asset('storage/' . $item->lpjDetail->bukti_lpj)); ?>" target="_blank"
+                                                class="text-blue-600 underline">Lihat Bukti (PDF)</a>
+                                        <?php else: ?>
+                                            <span class="text-gray-500">Belum ada bukti</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?php if($item->lpjDetail): ?>
+                                            <?php if($item->submission_flag == 'Y'): ?>
+                                                <span class="badge bg-success">submitted</span>
+                                            <?php else: ?>
+                                                <span class="badge bg-warning">not submitted</span>
+                                            <?php endif; ?>
+                                        <?php else: ?>
+                                            Detail Belum Ada
+                                        <?php endif; ?>
+                                    </td>
                                     <td><?php echo e($item->submission_date); ?></td>
-                                    <td><?php echo e($item->approval_status); ?></td>
+                                    <td>
+                                        <?php if($item->approval_status == 'N'): ?>
+                                            <span class="badge bg-warning">pending</span>
+                                        <?php elseif($item->approval_status == 'R'): ?>
+                                            <span class="badge bg-danger">rejected</span>
+                                        <?php elseif($item->approval_status == 'Y'): ?>
+                                            <span class="badge bg-success">approved</span>
+                                        <?php else: ?>
+                                            <span class="badge bg-secondary"><?php echo e($item->approval_status); ?></span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?php echo e($item->reject_reason ?? 'Tidak ada'); ?>
+
+                                    </td>
+                                    </td>
                                     <td><?php echo e($item->approval_date); ?></td>
                                     <td style="white-space: nowrap" class="d-flex gap-1">
-                                        <?php if($item->submission_flag == 'N' && Auth::user()->role == 'pegawai'): ?>
-                                            <div>
-                                                <form action="<?php echo e(route('lpj-header.submit', $item)); ?>" method="POST">
-                                                    <?php echo csrf_field(); ?>
-                                                    <button type="submit" class="btn btn-sm btn-primary">Submit</button>
-                                                </form>
-                                            </div>
+                                        <?php if($item->submission_flag == 'N' && Auth::user()->role == 'pegawai_bkn'): ?>
+                                            <?php if($item->approval_status == 'R'): ?>
+                                                <div>
+                                                    <a href="<?php echo e(route('lpj-header.create-detail', $item)); ?>"
+                                                        class="btn btn-sm btn-warning">
+                                                        Tambah Detail
+                                                    </a>
+                                                </div>
+                                            <?php else: ?>
+                                                <?php if($item->lpjDetail): ?>
+                                                    <div>
+                                                        <form action="<?php echo e(route('lpj-header.submit', $item)); ?>"
+                                                            method="POST">
+                                                            <?php echo csrf_field(); ?>
+                                                            <button type="submit"
+                                                                class="btn btn-sm btn-primary">Submit</button>
+                                                        </form>
+                                                    </div>
+                                                <?php endif; ?>
+                                            <?php endif; ?>
                                         <?php endif; ?>
 
-                                        <?php if($item->submission_flag == 'Y' && Auth::user()->role == 'admin' && $item->approval_status == 'N'): ?>
+                                        <?php if(
+                                            $item->submission_flag == 'Y' &&
+                                                Auth::user()->role == 'admin' &&
+                                                ($item->approval_status == 'N' || $item->approval_status == 'R')): ?>
                                             <div>
                                                 <form action="<?php echo e(route('lpj-header.approve', $item)); ?>" method="POST">
                                                     <?php echo csrf_field(); ?>
@@ -74,28 +125,66 @@
                                             </div>
                                         <?php endif; ?>
 
-                                        <?php if($item->submission_flag == 'Y' && Auth::user()->role == 'admin' && $item->approval_status == 'N'): ?>
+                                        <?php if(
+                                            $item->submission_flag == 'Y' &&
+                                                Auth::user()->role == 'admin' &&
+                                                ($item->approval_status == 'N' || $item->approval_status == 'R')): ?>
                                             <div>
-                                                <form action="<?php echo e(route('lpj-header.reject', $item)); ?>" method="POST">
-                                                    <?php echo csrf_field(); ?>
-                                                    <button type="submit" class="btn btn-sm btn-danger">Reject</button>
-                                                </form>
+                                                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal"
+                                                    data-bs-target="#rejectModal<?php echo e($item->id); ?>">
+                                                    Reject
+                                                </button>
+
+                                                <!-- Reject Modal -->
+                                                <div class="modal fade" id="rejectModal<?php echo e($item->id); ?>" tabindex="-1"
+                                                    aria-labelledby="rejectModalLabel<?php echo e($item->id); ?>"
+                                                    aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title"
+                                                                    id="rejectModalLabel<?php echo e($item->id); ?>">
+                                                                    Alasan Penolakan</h5>
+                                                                <button type="button" class="btn-close"
+                                                                    data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <form action="<?php echo e(route('lpj-header.reject', $item)); ?>"
+                                                                method="POST">
+                                                                <?php echo csrf_field(); ?>
+                                                                <div class="modal-body">
+                                                                    <div class="mb-3">
+                                                                        <label for="reject_reason" class="form-label">Alasan
+                                                                            Penolakan</label>
+                                                                        <textarea class="form-control" id="reject_reason" name="reject_reason" rows="3" required></textarea>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary"
+                                                                        data-bs-dismiss="modal">Batal</button>
+                                                                    <button type="submit"
+                                                                        class="btn btn-danger">Tolak</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         <?php endif; ?>
 
                                         <div>
-                                            <a href="<?php echo e(route('lpj-header.create-detail', $item)); ?>"
+                                            <a href="<?php echo e(route('lpj-header.show-detail', $item)); ?>"
                                                 class="btn btn-sm btn-warning">
-                                                Lihat
+                                                Lihat Detail
                                             </a>
                                         </div>
-
-                                        <div>
-                                            <a href="<?php echo e(route('lpj-header.export', $item)); ?>"
-                                                class="btn btn-sm btn-success">
-                                                Download
-                                            </a>
-                                        </div>
+                                        <?php if($item->submission_flag == 'Y' && $item->approval_status == 'Y'): ?>
+                                            <div>
+                                                <a href="<?php echo e(route('lpj-header.export', $item)); ?>"
+                                                    class="btn btn-sm btn-success">
+                                                    Download
+                                                </a>
+                                            </div>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>

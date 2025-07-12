@@ -15,4 +15,9 @@ class LpjHeader extends Model
     {
         return $this->belongsTo(Sppd::class);
     }
+
+    public function lpjDetail()
+    {
+        return $this->hasOne(LpjDetail::class, 'lpj_header_id', 'id');
+    }
 }

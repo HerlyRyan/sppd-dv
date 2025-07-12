@@ -3,11 +3,18 @@
 @section('content')
     <div class="card">
         <div class="card-header">
-            Tambah Data Detail LPJ
+            <div class="row">
+                <div class="col">
+                    Tambah Data Detail LPJ
+                </div>
+                <div class="col d-flex justify-content-end">
+                    <a href="{{ route('lpj-header.index') }}" class="btn btn-primary">Kembali</a>
+                </div>
+            </div>
         </div>
 
         <div class="card-body">
-            <form action="{{ route('lpj-header.store-detail') }}" method="POST">
+            <form action="{{ route('lpj-header.store-detail') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="row">
                     <div class="col-12 mb-3">
@@ -49,6 +56,19 @@
                             @enderror
                         </div>
 
+                        <div class="col-6 mb-3">
+                            <label for="bukti_lpj" class="form-label">Bukti PDF</label>
+                            <input type="file" accept="application/pdf"
+                                class="form-control @error('bukti_lpj') is-invalid @enderror" id="bukti_lpj"
+                                name="bukti_lpj">
+
+                            @error('bukti_lpj')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+
                         <div class="col-12 d-flex justify-content-end">
                             <button type="submit" class="btn btn-primary">Simpan</button>
                         </div>
@@ -70,6 +90,7 @@
                         <tr>
                             <th>Nama Kegiatan</th>
                             <th>Biaya Kegiatan</th>
+                            <th>Bukti LPJ</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -78,6 +99,8 @@
                             <tr>
                                 <td>{{ $item->nama_kegiatan }}</td>
                                 <td>{{ number_format($item->biaya_kegiatan, 0, ',', '.') }}</td>
+                                <td><a href="{{ asset('storage/' . $item->bukti_lpj) }}" target="_blank"
+                                        class="text-blue-600 underline">Lihat Bukti (PDF)</a></td>
                                 <td class="d-flex gap-1">
                                     @if ($lpj_header->submission_flag == 'N')
                                         <div>

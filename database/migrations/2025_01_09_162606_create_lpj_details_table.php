@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('lpj_header_id')->constrained();
             $table->string('nama_kegiatan');
             $table->string('biaya_kegiatan');
+            $table->string('bukti_lpj'); // pdf
             $table->timestamps();
         });
     }

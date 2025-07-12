@@ -38,23 +38,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         'functional-positions' => FunctionalPositionController::class,
     ]);
 
-    Route::get('/buat-surat', fn() => view('surat'))->name('surat.index');
-    Route::get('/history-surat', fn() => view('history', [
-        'items' => DB::table('surat')->paginate(20)
-    ]));
-
-    Route::resource('sppd', SppdController::class);
-    Route::get('sppd/{sppd}/buat', [SppdController::class, 'buat_surat'])->name('sppd.buat-surat');
-    Route::get('sppd/{sppd}/download', [SppdController::class, 'download_surat'])->name('sppd.download-surat');
-
-    Route::resource('lpj-header', LpjHeaderController::class);
-    Route::get('lpj-header/detail/{lpj_header}', [LpjHeaderController::class, 'create_detail'])->name('lpj-header.create-detail');
-    Route::post('lpj-header/store-detail', [LpjHeaderController::class, 'store_detail'])->name('lpj-header.store-detail');
-    Route::post('lpj-header/submit/{lpj_header}', [LpjHeaderController::class, 'submit'])->name('lpj-header.submit');
     Route::post('lpj-header/approve/{lpj_header}', [LpjHeaderController::class, 'approve'])->name('lpj-header.approve');
     Route::post('lpj-header/reject/{lpj_header}', [LpjHeaderController::class, 'reject'])->name('lpj-header.reject');
-    Route::get('lpj-header/export/{lpj_header}', [LpjHeaderController::class, 'export'])->name('lpj-header.export');
-    Route::delete('lpj-header/destroy-detail/{id}', [LpjHeaderController::class, 'destroy_detail'])->name('lpj-header.destroy-detail');
 });
 
 // SKP ROUTES (semua role kecuali pegawai_bkn)
@@ -70,9 +55,15 @@ Route::middleware(['auth', 'role:admin,pegawai_bkn'])->group(function () {
         'items' => DB::table('surat')->paginate(20)
     ]));
 
-    Route::resource('sppd', SppdController::class)->only(['index', 'show']);
+    Route::resource('sppd', SppdController::class);
+    Route::get('sppd/{sppd}/buat', [SppdController::class, 'buat_surat'])->name('sppd.buat-surat');
     Route::get('sppd/{sppd}/download', [SppdController::class, 'download_surat'])->name('sppd.download-surat');
 
-    Route::resource('lpj-header', LpjHeaderController::class)->only(['index', 'show']);
+    Route::resource('lpj-header', LpjHeaderController::class);
+    Route::post('lpj-header/submit/{lpj_header}', [LpjHeaderController::class, 'submit'])->name('lpj-header.submit');
+    Route::get('lpj-header/create/{lpj_header}', [LpjHeaderController::class, 'create_detail'])->name('lpj-header.create-detail');
+    Route::get('lpj-header/detail/{lpj_header}', [LpjHeaderController::class, 'show_detail'])->name('lpj-header.show-detail');
+    Route::post('lpj-header/store-detail', [LpjHeaderController::class, 'store_detail'])->name('lpj-header.store-detail');
     Route::get('lpj-header/export/{lpj_header}', [LpjHeaderController::class, 'export'])->name('lpj-header.export');
+    Route::delete('lpj-header/destroy-detail/{id}', [LpjHeaderController::class, 'destroy_detail'])->name('lpj-header.destroy-detail');
 });
