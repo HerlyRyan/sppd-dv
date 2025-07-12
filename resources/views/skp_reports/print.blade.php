@@ -226,83 +226,63 @@
             {{ \Carbon\Carbon::parse($skpReport->periode_mulai)->isoFormat('D MMMM Y') }} s.d.
             {{ \Carbon\Carbon::parse($skpReport->periode_selesai)->isoFormat('D MMMM Y') }}</p>
     </div>
-    <table class="no-border">
-        <tr>
-            <td style="width: 50%;">
-                <table class="skp-table">
-                    <thead>
-                        <tr>
-                            <th class="no-col">NO</th>
-                            <th colspan="2">PEGAWAI YANG DINILAI</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="no-col">1</td>
-                            <td class="title-col">NAMA</td>
-                            <td class="value-col">{{ $skpReport->pegawai->nama_pegawai ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="no-col">2</td>
-                            <td class="title-col">NIP</td>
-                            <td class="value-col">{{ $skpReport->pegawai->nip ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="no-col">3</td>
-                            <td class="title-col">PANGKAT/ GOL. RUANG</td>
-                            <td class="value-col">{{ $skpReport->pegawai->grade->golongan ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="no-col">4</td>
-                            <td class="title-col">JABATAN</td>
-                            <td class="value-col">{{ $skpReport->pegawai->position->nama_jabatan ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="no-col">5</td>
-                            <td class="title-col">UNIT KERJA</td>
-                            <td class="value-col">{{ $skpReport->pegawai->agency->instansi ?? '-' }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </td>
-            <td style="width: 50%;">
-                <table class="skp-table">
-                    <thead>
-                        <tr>
-                            <th class="no-col">NO</th>
-                            <th colspan="2">PEGAWAI YANG DINILAI</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="no-col">1</td>
-                            <td class="title-col">NAMA</td>
-                            <td class="value-col">{{ $skpReport->penilai->nama_pegawai ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="no-col">2</td>
-                            <td class="title-col">NIP</td>
-                            <td class="value-col">{{ $skpReport->penilai->nip ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="no-col">3</td>
-                            <td class="title-col">PANGKAT/ GOL. RUANG</td>
-                            <td class="value-col">{{ $skpReport->penilai->grade->golongan ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="no-col">4</td>
-                            <td class="title-col">JABATAN</td>
-                            <td class="value-col">{{ $skpReport->penilai->position->nama_jabatan ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="no-col">5</td>
-                            <td class="title-col">UNIT KERJA</td>
-                            <td class="value-col">{{ $skpReport->penilai->agency->instansi ?? '-' }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </td>
-        </tr>
+    <table class="skp-table">
+        <thead>
+            <tr>
+                <th class="no-col">NO</th>
+                <th colspan="2">PEGAWAI YANG DINILAI</th>
+
+                <th class="no-col">NO</th>
+                <th colspan="2">PENILAI PEGAWAI</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="no-col">1</td>
+                <td class="title-col">NAMA</td>
+                <td class="value-col">{{ $skpReport->pegawai->nama_pegawai ?? '-' }}</td>
+
+                <td class="no-col">1</td>
+                <td class="title-col">NAMA</td>
+                <td class="value-col">{{ $skpReport->penilai->nama_pegawai ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="no-col">2</td>
+                <td class="title-col">NIP</td>
+                <td class="value-col">{{ $skpReport->pegawai->nip ?? '-' }}</td>
+
+                <td class="no-col">2</td>
+                <td class="title-col">NIP</td>
+                <td class="value-col">{{ $skpReport->penilai->nip ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="no-col">3</td>
+                <td class="title-col">PANGKAT/ GOL. RUANG</td>
+                <td class="value-col">{{ $skpReport->pegawai->grade->golongan ?? '-' }}</td>
+
+                <td class="no-col">3</td>
+                <td class="title-col">PANGKAT/ GOL. RUANG</td>
+                <td class="value-col">{{ $skpReport->penilai->grade->golongan ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="no-col">4</td>
+                <td class="title-col">JABATAN</td>
+                <td class="value-col">{{ $skpReport->pegawai->position->nama_jabatan ?? '-' }}</td>
+
+                <td class="no-col">4</td>
+                <td class="title-col">JABATAN</td>
+                <td class="value-col">{{ $skpReport->penilai->position->nama_jabatan ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="no-col">5</td>
+                <td class="title-col">UNIT KERJA</td>
+                <td class="value-col">{{ $skpReport->pegawai->agency->instansi ?? '-' }}</td>
+
+                <td class="no-col">5</td>
+                <td class="title-col">UNIT KERJA</td>
+                <td class="value-col">{{ $skpReport->penilai->agency->instansi ?? '-' }}</td>
+            </tr>
+        </tbody>
     </table>
 
     <table class="table-hasil-kerja">

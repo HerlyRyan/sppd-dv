@@ -11,7 +11,7 @@
                     @php
                         $role = Auth::user()->role;
                     @endphp
-                    @if ($role === 'admin' || $role === 'pegawai_unit_kerja')
+                    @if ($role !== 'pimpinan_bkn')
                         <div class="col d-flex justify-content-end">
                             <a href="{{ route('skp.create') }}" class="btn btn-primary">Tambah Data</a>
                         </div>
@@ -37,6 +37,8 @@
                                 <th scope="col">Jabatan</th>
                                 <th scope="col">Periode</th>
                                 <th scope="col">Penilai</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Alasan Ditolak</th>
                                 <th scope="col" style="width: 15%;" class="text-center">Aksi</th>
                             </tr>
                         </thead>
@@ -50,23 +52,163 @@
                                 @foreach ($skpReports as $index => $skpReport)
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
-                                        <td>{{ $skpReport->pegawai->nama_pegawai ?? 'N/A' }}</td> {{-- Mengambil nama pegawai dari relasi --}}
-                                        <td>{{ $skpReport->pegawai->nip ?? 'N/A' }}</td> {{-- Mengambil NIP pegawai dari relasi --}}
+                                        <td>{{ $skpReport->pegawai->nama_pegawai ?? 'N/A' }}</td>
+                                        <td>{{ $skpReport->pegawai->nip ?? 'N/A' }}</td>
                                         <td>{{ $skpReport->pegawai->position->nama_jabatan ?? 'N/A' }}</td>
-                                        {{-- Mengambil jabatan pegawai dari relasi --}}
+
                                         <td>
                                             {{ \Carbon\Carbon::parse($skpReport->periode_mulai)->format('d/m/Y') }} -
                                             {{ \Carbon\Carbon::parse($skpReport->periode_selesai)->format('d/m/Y') }}
                                         </td>
-                                        <td>{{ $skpReport->penilai->nama_pegawai ?? 'N/A' }}</td> {{-- Mengambil nama penilai dari relasi --}}
+                                        <td>{{ $skpReport->penilai->nama_pegawai ?? 'N/A' }}</td>
+                                        <td>
+                                            @switch($skpReport->status)
+                                                @case('pending')
+                                                    <span class="badge bg-warning text-dark">Pending</span>
+                                                @break
+
+                                                @case('rejected')
+                                                    <span class="badge bg-danger">Ditolak</span>
+                                                @break
+
+                                                @case('approved_stage_1')
+                                                    <span class="badge bg-info">Disetujui Tahap 1</span>
+                                                @break
+
+                                                @case('approved')
+                                                    <span class="badge bg-success">Disetujui</span>
+                                                @break
+
+                                                @default
+                                                    <span class="badge bg-secondary">{{ $skpReport->status }}</span>
+                                            @endswitch
+                                        </td>
+                                        <td>{{ $skpReport->reject_reason ?? 'Tidak ada' }}</td>
+                                        </td>
                                         <td class="d-flex gap-1 justify-content-center" style="white-space: nowrap">
-                                            <a href="{{ route('skp.show', $skpReport->id) }}" class="btn btn-sm btn-warning"
-                                                target="_blank" title="Lihat Detail">
+
+                                            @if ($role === 'pimpinan_unit_kerja')
+                                                @if ($skpReport->status === 'pending' || $skpReport->status === 'rejected')
+                                                    <div>
+                                                        <form action="{{ route('skp.approved_stage_one', $skpReport) }}"
+                                                            method="POST">
+                                                            @csrf
+                                                            <button type="submit"
+                                                                class="btn btn-sm btn-success">Approve</button>
+                                                        </form>
+                                                    </div>
+                                                    <div>
+                                                        <button type="button" class="btn btn-sm btn-danger"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#rejectModal{{ $skpReport->id }}">
+                                                            Reject
+                                                        </button>
+
+                                                        <!-- Reject Modal -->
+                                                        <div class="modal fade" id="rejectModal{{ $skpReport->id }}"
+                                                            tabindex="-1"
+                                                            aria-labelledby="rejectModalLabel{{ $skpReport->id }}"
+                                                            aria-hidden="true">
+                                                            <div class="modal-dialog">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title"
+                                                                            id="rejectModalLabel{{ $skpReport->id }}">
+                                                                            Alasan Penolakan</h5>
+                                                                        <button type="button" class="btn-close"
+                                                                            data-bs-dismiss="modal"
+                                                                            aria-label="Close"></button>
+                                                                    </div>
+                                                                    <form action="{{ route('skp.rejected', $skpReport) }}"
+                                                                        method="POST">
+                                                                        @csrf
+                                                                        <div class="modal-body">
+                                                                            <div class="mb-3">
+                                                                                <label for="reject_reason"
+                                                                                    class="form-label">Alasan
+                                                                                    Penolakan</label>
+                                                                                <textarea class="form-control" id="reject_reason" name="reject_reason" rows="3" required></textarea>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button type="button" class="btn btn-secondary"
+                                                                                data-bs-dismiss="modal">Batal</button>
+                                                                            <button type="submit"
+                                                                                class="btn btn-danger">Tolak</button>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            @endif
+
+                                            @if ($role === 'pimpinan_bkn')
+                                                @if ($skpReport->status === 'approved_stage_1')
+                                                    <div>
+                                                        <form action="{{ route('skp.approved_final', $skpReport) }}"
+                                                            method="POST">
+                                                            @csrf
+                                                            <button type="submit"
+                                                                class="btn btn-sm btn-success">Approve</button>
+                                                        </form>
+                                                    </div>
+                                                    <div>
+                                                        <button type="button" class="btn btn-sm btn-danger"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#rejectModal{{ $skpReport->id }}">
+                                                            Reject
+                                                        </button>
+
+                                                        <!-- Reject Modal -->
+                                                        <div class="modal fade" id="rejectModal{{ $skpReport->id }}"
+                                                            tabindex="-1"
+                                                            aria-labelledby="rejectModalLabel{{ $skpReport->id }}"
+                                                            aria-hidden="true">
+                                                            <div class="modal-dialog">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title"
+                                                                            id="rejectModalLabel{{ $skpReport->id }}">
+                                                                            Alasan Penolakan</h5>
+                                                                        <button type="button" class="btn-close"
+                                                                            data-bs-dismiss="modal"
+                                                                            aria-label="Close"></button>
+                                                                    </div>
+                                                                    <form action="{{ route('skp.rejected', $skpReport) }}"
+                                                                        method="POST">
+                                                                        @csrf
+                                                                        <div class="modal-body">
+                                                                            <div class="mb-3">
+                                                                                <label for="reject_reason"
+                                                                                    class="form-label">Alasan
+                                                                                    Penolakan</label>
+                                                                                <textarea class="form-control" id="reject_reason" name="reject_reason" rows="3" required></textarea>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button type="button"
+                                                                                class="btn btn-secondary"
+                                                                                data-bs-dismiss="modal">Batal</button>
+                                                                            <button type="submit"
+                                                                                class="btn btn-danger">Tolak</button>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            @endif
+                                            <a href="{{ route('skp.show', $skpReport->id) }}"
+                                                class="btn btn-sm btn-warning" target="_blank" title="Lihat Detail">
                                                 <i class="bi bi-eye"></i> Lihat
                                             </a>
-                                            {{-- Tambahkan ikon Bootstrap jika menggunakan Bootstrap Icons --}}
-                                            <a href="{{ route('skp.print', $skpReport->id) }}"
-                                                class="btn btn-sm btn-success" target="_blank">Cetak</a>
+                                            @if ($skpReport->status == 'approved')
+                                                <a href="{{ route('skp.print', $skpReport->id) }}"
+                                                    class="btn btn-sm btn-success" target="_blank">Cetak</a>
+                                            @endif
                                             <a href="{{ route('skp.edit', $skpReport->id) }}" class="btn btn-sm btn-info"
                                                 title="Edit Data">
                                                 <i class="bi bi-pencil-square"></i> Edit

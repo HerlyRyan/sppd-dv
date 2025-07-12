@@ -1,12 +1,12 @@
 <?php $__env->startSection('content'); ?>
-    <div class="container py-4">
+    <div class="container-fluid py-3 py-md-4">
         <div class="card shadow-sm">
-            <div class="card-header bg-white text-center py-4">
-                <h5 class="mb-1">PEMERINTAH KOTA BANJARBARU</h5>
-                <h4 class="mb-1">SASARAN KINERJA PEGAWAI</h4>
-                <h5 class="mb-3">PENDEKATAN HASIL KERJA KUANTITATIF</h5>
-                <h6 class="mb-0">BAGI PEJABAT ADMINISTRASI DAN PEJABAT FUNGSIONAL</h6>
-                <p class="mb-0">PERIODE PENILAIAN:
+            <div class="card-header bg-white text-center py-3 py-md-4">
+                <h5 class="mb-1 fs-6 fs-md-5">PEMERINTAH KOTA BANJARBARU</h5>
+                <h4 class="mb-1 fs-5 fs-md-4">SASARAN KINERJA PEGAWAI</h4>
+                <h5 class="mb-2 mb-md-3 fs-6 fs-md-5">PENDEKATAN HASIL KERJA KUANTITATIF</h5>
+                <h6 class="mb-0 fs-6">BAGI PEJABAT ADMINISTRASI DAN PEJABAT FUNGSIONAL</h6>
+                <p class="mb-0 small">PERIODE PENILAIAN:
                     <?php echo e(\Carbon\Carbon::parse($skpReport->periode_mulai)->format('d F Y')); ?> SD
                     <?php echo e(\Carbon\Carbon::parse($skpReport->periode_selesai)->format('d F Y')); ?>
 
@@ -197,23 +197,24 @@
                     </ol>
                 </div>
 
-                <div class="d-flex justify-around">
-                    <div class="row mt-4">
+                <div class="row mt-5 mb-4">
+                    <div class="col-md-5">
                         <div class="text-center">
-                            <p class="mb-4">Pegawai yang Dinilai</p>
-                            <br><br><br> 
-                            <p class="mb-0"><strong><?php echo e($skpReport->pegawai->name ?? 'N/A'); ?></strong></p>
+                            <p class="mt-4 mb-4">Pegawai yang Dinilai</p>
+                            <div class="mb-5 pt-4"></div> 
+                            <hr class="w-75 mx-auto mb-3"> 
+                            <p class="mb-0"><strong><?php echo e($skpReport->pegawai->nama_pegawai ?? 'N/A'); ?></strong></p>
                             <p class="mb-0">NIP. <?php echo e($skpReport->pegawai->nip ?? 'N/A'); ?></p>
                         </div>
                     </div>
-                    <div class="row mt-3">
+                    <div class="col-md-2"></div> 
+                    <div class="col-md-5">
                         <div class="text-center">
-                            <p class="mb-1"><?php echo e(\Carbon\Carbon::parse($skpReport->tanggal_penilaian)->format('d F Y')); ?>
-
-                            </p>
+                            <p class="mb-0"><?php echo e(\Carbon\Carbon::parse($skpReport->tanggal_penilaian)->format('d F Y')); ?></p>
                             <p class="mb-4">Pejabat Penilai Kinerja</p>
-                            <br><br><br> 
-                            <p class="mb-0"><strong><?php echo e($skpReport->penilai->name ?? 'N/A'); ?></strong></p>
+                            <div class="mb-5 pt-4"></div> 
+                            <hr class="w-75 mx-auto mb-3"> 
+                            <p class="mb-0"><strong><?php echo e($skpReport->penilai->nama_pegawai ?? 'N/A'); ?></strong></p>
                             <p class="mb-0">NIP. <?php echo e($skpReport->penilai->nip ?? 'N/A'); ?></p>
                         </div>
                     </div>

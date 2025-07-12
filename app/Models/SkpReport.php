@@ -17,6 +17,8 @@ class SkpReport extends Model
         'periode_mulai',
         'periode_selesai',
         'tanggal_penilaian',
+        'status',
+        'reject_reason'
     ];
 
     /**

@@ -413,4 +413,34 @@ class SkpReportController extends Controller
         // $pdf = Pdf::loadView('skp_reports.print', compact('skpReport'))->setPaper('A4', 'portrait');
         // return $pdf->download('Laporan_SKP_' . $skpReport->pegawai->nama_pegawai . '.pdf');
     }
+
+    public function approve_stage_one(SkpReport $skpReport)
+    {
+        $skpReport->update([
+            'status' => 'approved_stage_1',
+            'reject_reason' => null
+        ]);
+
+        return redirect()->route('skp.index')->with('success', 'SKP berhasil diapprove');
+    }
+
+    public function approved_final(SkpReport $skpReport)
+    {
+        $skpReport->update([
+            'status' => 'approved',
+            'reject_reason' => null
+        ]);
+
+        return redirect()->route('skp.index')->with('success', 'SKP berhasil diapprove');
+    }
+
+    public function rejected(Request $request, SkpReport $skpReport)
+    {
+        $skpReport->update([
+            'status' => 'rejected',
+            'reject_reason' => $request->reject_reason
+        ]);
+
+        return redirect()->route('skp.index')->with('success', 'SKP ditolak');
+    }
 }

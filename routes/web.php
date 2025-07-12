@@ -42,12 +42,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('lpj-header/reject/{lpj_header}', [LpjHeaderController::class, 'reject'])->name('lpj-header.reject');
 });
 
-// SKP ROUTES (semua role kecuali pegawai_bkn)
-Route::middleware(['auth', 'role:admin,pegawai_unit_kerja,pimpinan_unit_kerja,pimpinan_bkn'])->group(function () {
-    Route::resource('skp', SkpReportController::class)->parameters(['skp' => 'skpReport']);
-    Route::get('skp/{skpReport}/print', [SkpReportController::class, 'download_surat'])->name('skp.print');
-});
-
 // Pegawai BKN
 Route::middleware(['auth', 'role:admin,pegawai_bkn'])->group(function () {
     Route::get('/buat-surat', fn() => view('surat'))->name('surat.index');
@@ -67,4 +61,19 @@ Route::middleware(['auth', 'role:admin,pegawai_bkn'])->group(function () {
     Route::put('lpj-header/update-detail/{lpj_detail}', [LpjHeaderController::class, 'update_detail'])->name('lpj-header.update-detail');
     Route::get('lpj-header/export/{lpj_header}', [LpjHeaderController::class, 'export'])->name('lpj-header.export');
     Route::delete('lpj-header/destroy-detail/{id}', [LpjHeaderController::class, 'destroy_detail'])->name('lpj-header.destroy-detail');
+});
+
+Route::middleware(['auth', 'role:pimpinan_unit_kerja'])->group(function () {
+    Route::post('skp/approve/{skpReport}', [SkpReportController::class, 'approve_stage_one'])->name('skp.approved_stage_one');
+});
+
+Route::middleware(['auth', 'role:pimpinan_bkn'])->group(function () {
+    Route::post('skp/approve_final/{skpReport}', [SkpReportController::class, 'approved_final'])->name('skp.approved_final');
+});
+
+// SKP ROUTES (semua role kecuali pegawai_bkn)
+Route::middleware(['auth', 'role:admin,pegawai_unit_kerja,pimpinan_unit_kerja,pimpinan_bkn'])->group(function () {
+    Route::resource('skp', SkpReportController::class)->parameters(['skp' => 'skpReport']);
+    Route::get('skp/{skpReport}/print', [SkpReportController::class, 'download_surat'])->name('skp.print');
+    Route::post('skp/reject/{skpReport}', [SkpReportController::class, 'rejected'])->name('skp.rejected');
 });
