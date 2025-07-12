@@ -17,7 +17,7 @@ class LpjHeaderController extends Controller
     public function index()
     {
         $items = LpjHeader::with('lpjDetail')->paginate();
-        
+
         return view('lpj.index', compact('items'));
     }
 
@@ -104,17 +104,50 @@ class LpjHeaderController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(LpjHeader $lpjHeader)
+    public function edit($id)
     {
-        //
+        $lpj_detail = LpjDetail::find($id);
+        return view('lpj.edit-detail', compact('lpj_detail'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, LpjHeader $lpjHeader)
+    public function update_detail(Request $request, LpjDetail $lpj_detail)
     {
-        //
+        $request->validate([
+            'nama_kegiatan' => 'string',
+            'biaya_kegiatan' => 'numeric',
+            'bukti_lpj' => 'nullable|file|mimes:pdf|max:2048'
+        ]);
+
+        $data = [
+            'nama_kegiatan' => $request->nama_kegiatan,
+            'biaya_kegiatan' => $request->biaya_kegiatan,
+        ];
+
+        // Only update the file if a new one is uploaded
+        if ($request->hasFile('bukti_lpj')) {
+            // Delete old file if exists
+            if ($lpj_detail->bukti_lpj && file_exists(storage_path('app/public/' . $lpj_detail->bukti_lpj))) {
+                unlink(storage_path('app/public/' . $lpj_detail->bukti_lpj));
+            }
+            
+            // Store the new file
+            $data['bukti_lpj'] = $request->file('bukti_lpj')->store('lpj', 'public');
+        }
+
+        $lpj_detail->update($data);
+
+        // Update the approval_status in LpjHeader to 'N' when a detail is updated
+        $lpjHeader = LpjHeader::find($lpj_detail->lpj_header_id);
+        if ($lpjHeader) {
+            $lpjHeader->update([
+                'approval_status' => 'N'
+            ]);
+        }
+
+        return back()->with('success', 'Detail LPJ berhasil diperbarui');
     }
 
     /**
@@ -144,7 +177,7 @@ class LpjHeaderController extends Controller
         ]);
 
         return redirect()->route('lpj-header.index')->with('success', 'LPJ berhasil diapprove');
-    }   
+    }
 
     public function reject(Request $request, LpjHeader $lpj_header)
     {
@@ -181,17 +214,17 @@ class LpjHeaderController extends Controller
     public function destroy_detail($id)
     {
         $lpjDetail = LpjDetail::find($id);
-        
+
         if ($lpjDetail) {
             // Delete the PDF file from storage
             if ($lpjDetail->bukti_lpj && file_exists(storage_path('app/public/' . $lpjDetail->bukti_lpj))) {
                 unlink(storage_path('app/public/' . $lpjDetail->bukti_lpj));
             }
-            
+
             // Delete the record from database
             $lpjDetail->delete();
         }
-        
+
         return back()->with('success', 'Data berhasil dihapus');
     }
 }

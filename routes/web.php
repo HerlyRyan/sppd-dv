@@ -64,6 +64,7 @@ Route::middleware(['auth', 'role:admin,pegawai_bkn'])->group(function () {
     Route::get('lpj-header/create/{lpj_header}', [LpjHeaderController::class, 'create_detail'])->name('lpj-header.create-detail');
     Route::get('lpj-header/detail/{lpj_header}', [LpjHeaderController::class, 'show_detail'])->name('lpj-header.show-detail');
     Route::post('lpj-header/store-detail', [LpjHeaderController::class, 'store_detail'])->name('lpj-header.store-detail');
+    Route::put('lpj-header/update-detail/{lpj_detail}', [LpjHeaderController::class, 'update_detail'])->name('lpj-header.update-detail');
     Route::get('lpj-header/export/{lpj_header}', [LpjHeaderController::class, 'export'])->name('lpj-header.export');
     Route::delete('lpj-header/destroy-detail/{id}', [LpjHeaderController::class, 'destroy_detail'])->name('lpj-header.destroy-detail');
 });
