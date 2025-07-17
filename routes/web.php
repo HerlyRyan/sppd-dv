@@ -10,8 +10,10 @@ use App\Http\Controllers\AgencyController;
 use App\Http\Controllers\SppdController;
 use App\Http\Controllers\LpjHeaderController;
 use App\Http\Controllers\FunctionalPositionController;
+use App\Http\Controllers\ReportController;
 use App\Models\Employee;
 use Illuminate\Support\Facades\DB;
+use SebastianBergmann\CodeCoverage\Report\Xml\Report;
 
 // Login routes
 Route::middleware('guest')->group(function () {
@@ -40,6 +42,24 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::post('lpj-header/approve/{lpj_header}', [LpjHeaderController::class, 'approve'])->name('lpj-header.approve');
     Route::post('lpj-header/reject/{lpj_header}', [LpjHeaderController::class, 'reject'])->name('lpj-header.reject');
+
+    Route::prefix('laporan')->name('laporan.')->group(function () {
+        Route::get('/grafik-skp', [ReportController::class, 'grafikSKPAntarPegawai'])->name('grafik-skp.index');
+        Route::get('/grafik-skp/print', [ReportController::class, 'printGrafikSKPAntarPegawai'])->name('grafik-skp.print');
+
+        Route::get('/ringkasan-kinerja', [ReportController::class, 'ringkasanKinerjaPerUnit'])->name('ringkasan-kinerja.index');
+        Route::get('/ringkasan-kinerja/print', [ReportController::class, 'printRingkasanKinerjaPerUnit'])->name('ringkasan-kinerja.print');
+
+        Route::get('/kehadiran-tahunan', [ReportController::class, 'kehadiranTahunan'])->name('kehadiran-tahunan.index');
+        Route::get('/kehadiran-tahunan/print', [ReportController::class, 'printKehadiranTahunan'])->name('kehadiran-tahunan.print');
+
+        Route::get('/pegawai', [ReportController::class, 'indexPegawai'])->name('pegawai.index');
+        Route::get('/pegawai/print', [ReportController::class, 'printPegawai'])->name('pegawai.print');
+
+        Route::get('/sppd-per-bulan', [ReportController::class, 'sppdPerBulan'])->name('sppd-per-bulan.index');
+        Route::get('/sppd-per-bulan/print', [ReportController::class, 'printSppdPerBulan'])->name('sppd-per-bulan.print');
+    });
+
 });
 
 // Pegawai BKN
