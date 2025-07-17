@@ -25,8 +25,8 @@ return new class extends Migration
             $table->date('tanggal_kembali');
             $table->string('pejabat_pembuat_komitmen');
             $table->integer('biaya_sppd');
-            $table->enum('flag_buat_surat', ['Y', 'N']);
-            $table->enum('flag_lpj', ['Y', 'N']);
+            $table->enum('flag_buat_surat', ['Y', 'N'])->default('N');
+            $table->enum('flag_lpj', ['Y', 'N'])->default('N');
             $table->timestamps();
         });
     }

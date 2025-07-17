@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('nip')->unique();
             $table->string('nama_pegawai');
             $table->string('npwp');
+            $table->string('status');
             $table->enum('jenis_kelamin', ['L', 'P']);        
             $table->timestamps();
         });

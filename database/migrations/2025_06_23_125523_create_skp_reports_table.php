@@ -25,7 +25,7 @@ return new class extends Migration
 
             $table->date('periode_mulai');
             $table->date('periode_selesai');
-            $table->string('reject_reason');
+            $table->string('reject_reason')->nullable();
             $table->enum('status', ['pending', 'rejected', 'approved_stage_1', 'approved'])->default('pending');
             $table->date('tanggal_penilaian')->nullable(); // Tanggal penilaian, seperti "4 Juni 2025"
             $table->timestamps();
