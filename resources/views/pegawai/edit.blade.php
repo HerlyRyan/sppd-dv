@@ -89,7 +89,7 @@
                         <select name="functional_position_id" id="functional_position_id"
                             class="form-select @error('functional_position_id') is-invalid @enderror">
                             @foreach ($functional_positions as $functional_position)
-                                <option value="{{ $functional_position->id }}" @selected(old('functional_position_id') == $functional_position->id)>
+                                <option value="{{ $functional_position->id }}" @selected(old('functional_position_id') == $employee->functional_position_id)>
                                     {{ $functional_position->nama_jabatan_fungsional }}
                                 </option>
                             @endforeach
@@ -107,13 +107,31 @@
                         <select name="agency_id" id="agency_id"
                             class="form-select @error('agency_id') is-invalid @enderror">
                             @foreach ($agencies as $agency)
-                                <option value="{{ $agency->id }}" @selected(old('agency_id', $agency->id) == $agency->id)>
+                                <option value="{{ $agency->id }}" @selected(old('agency_id', $employee->agency_id) == $agency->id)>
                                     {{ $agency->instansi }}
                                 </option>
                             @endforeach
                         </select>
 
                         @error('agency_id')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+
+                    <div class="col-12">
+                        <label for="unit_kerja_id" class="form-label">Unit Kerja</label>
+                        <select name="unit_kerja_id" id="unit_kerja_id"
+                            class="form-select @error('unit_kerja_id') is-invalid @enderror">
+                            @foreach ($unit_kerja as $unit)
+                                <option value="{{ $unit->id }}" @selected(old('unit_kerja_id', $employee->unit_kerja_id) == $unit->id)>
+                                    {{ $unit->nama_unit_kerja }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        @error('unit_kerja_id')
                             <div class="invalid-feedback">
                                 {{ $message }}
                             </div>

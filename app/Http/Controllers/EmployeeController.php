@@ -7,6 +7,7 @@ use App\Models\Employee;
 use App\Models\FunctionalPosition;
 use App\Models\Grade;
 use App\Models\Position;
+use App\Models\UnitKerja;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -31,6 +32,7 @@ class EmployeeController extends Controller
             'agencies'  => Agency::all(),
             'positions' => Position::all(),
             'functional_positions' => FunctionalPosition::all(),
+            'unit_kerja' => UnitKerja::all(),
         ]);
     }
 
@@ -48,7 +50,8 @@ class EmployeeController extends Controller
             'nip'                       => 'required|unique:employees',
             'npwp'                      => 'required',
             'agency_id'                 => 'required',
-            'functional_position_id'    => 'required',            
+            'functional_position_id'    => 'required',
+            'unit_kerja_id'             => 'required',            
         ]);
 
         Employee::create($validated);
@@ -75,6 +78,7 @@ class EmployeeController extends Controller
             'agencies'  => Agency::all(),
             'employee'  => $employee,
             'functional_positions' => FunctionalPosition::all(),
+            'unit_kerja' => UnitKerja::all(),
             'selected_role' => $user ? $user->role : null,
         ]);
     }
@@ -94,6 +98,7 @@ class EmployeeController extends Controller
             'npwp'          => 'required',
             'agency_id'     => 'required',
             'functional_position_id' => 'required',
+            'unit_kerja_id'          => 'required',
         ]);
 
         // Get the old NIP before update

@@ -225,6 +225,40 @@ unset($__errorArgs, $__bag); ?>
                     </div>
 
                     <div class="col-12">
+                        <label for="unit_kerja_id" class="form-label">Unit Kerja</label>
+                        <select name="unit_kerja_id" id="unit_kerja_id"
+                            class="form-select <?php $__errorArgs = ['unit_kerja_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+                            <?php $__currentLoopData = $unit_kerja; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $unit): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($unit->id); ?>" <?php if(old('unit_kerja_id') == $unit->id): echo 'selected'; endif; ?>>
+                                    <?php echo e($unit->nama_unit_kerja); ?>
+
+                                </option>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </select>
+
+                        <?php $__errorArgs = ['unit_kerja_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <div class="invalid-feedback">
+                                <?php echo e($message); ?>
+
+                            </div>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                    </div>
+
+                    <div class="col-12">
                         <label for="grade_id" class="form-label">Golongan</label>
                         <select name="grade_id" id="grade_id" class="form-select <?php $__errorArgs = ['grade_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');

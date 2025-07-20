@@ -119,6 +119,24 @@
                     </div>
 
                     <div class="col-12">
+                        <label for="unit_kerja_id" class="form-label">Unit Kerja</label>
+                        <select name="unit_kerja_id" id="unit_kerja_id"
+                            class="form-select @error('unit_kerja_id') is-invalid @enderror">
+                            @foreach ($unit_kerja as $unit)
+                                <option value="{{ $unit->id }}" @selected(old('unit_kerja_id') == $unit->id)>
+                                    {{ $unit->nama_unit_kerja }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        @error('unit_kerja_id')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+
+                    <div class="col-12">
                         <label for="grade_id" class="form-label">Golongan</label>
                         <select name="grade_id" id="grade_id" class="form-select @error('grade_id') is-invalid @enderror">
                             @foreach ($grades as $grade)
