@@ -15,6 +15,7 @@ use App\Models\FunctionalPosition;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB; // Digunakan untuk transaksi database
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 
 class SkpReportController extends Controller
 {
@@ -25,11 +26,11 @@ class SkpReportController extends Controller
      */
     public function index()
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         $query = SkpReport::with([
-            'pegawai.position',
-            'penilai.position',
+            'pegawai.functional_position',
+            'penilai.functional_position',
             'workResults.performanceIndicators',
             'workBehaviors',
             'supportingResources',
@@ -38,17 +39,26 @@ class SkpReportController extends Controller
             'pegawai.agency',
         ]);
 
-        // Jika bukan admin atau pimpinan_bkn, filter berdasarkan agency dari employee yang sesuai nip
+        // Cek role user
         if (!in_array($user->role, ['admin', 'pimpinan_bkn'])) {
             $pegawai = Employee::where('nip', $user->username)->first();
 
-            if ($pegawai && $pegawai->agency_id) {
-                $query->whereHas('pegawai', function ($q) use ($pegawai) {
-                    $q->where('agency_id', $pegawai->agency_id);
-                });
-            } else {
-                // Jika pegawai tidak ditemukan atau tidak punya agency, kosongkan hasil
+            if (!$pegawai) {
+                // Jika tidak ditemukan, kosongkan data
                 $query->whereRaw('1 = 0');
+            } else {
+                if ($user->role === 'pimpinan_unit_kerja') {
+                    // Filter berdasarkan agency
+                    $query->whereHas('pegawai', function ($q) use ($pegawai) {
+                        $q->where('agency_id', $pegawai->agency_id);
+                    });
+                } elseif ($user->role === 'pegawai_unit_kerja') {
+                    // Filter hanya berdasarkan pegawai itu sendiri
+                    $query->where('pegawai_id', $pegawai->id);
+                } else {
+                    // Role tidak dikenal, kosongkan
+                    $query->whereRaw('1 = 0');
+                }
             }
         }
 
@@ -63,7 +73,7 @@ class SkpReportController extends Controller
      * @return \Illuminate\View\View
      */
     public function create()
-    {
+    {        
         // Mendapatkan ID posisi yang mengandung kata "KETUA"
         $kepalaPosisiIds = FunctionalPosition::where('nama_jabatan_fungsional', 'LIKE', '%KEPALA%')->pluck('id');
 
@@ -77,7 +87,7 @@ class SkpReportController extends Controller
         $penilaiOptions = Employee::whereIn('functional_position_id', $kepalaPosisiIds)
             ->with('functional_position') // Eager load position untuk ditampilkan di view
             ->orderBy('nama_pegawai') // Menggunakan 'nama_pegawai' sesuai model Employee yang diberikan
-            ->get();
+            ->get();        
 
         return view('skp_reports.create', compact('pegawaiOptions', 'penilaiOptions'));
     }
@@ -91,7 +101,7 @@ class SkpReportController extends Controller
     public function store(Request $request)
     {
         // Mendapatkan ID posisi yang mengandung kata "KETUA"
-        $kepalaPosisiIds = Position::where('nama_jabatan', 'LIKE', '%KETUA%')->pluck('id');
+        $kepalaPosisiIds = FunctionalPosition::where('nama_jabatan_fungsional', 'LIKE', '%KEPALA%')->pluck('id');
 
         $validatedData = $request->validate([
             'periode_mulai' => 'required|date',
@@ -267,8 +277,8 @@ class SkpReportController extends Controller
      */
     public function update(Request $request, SkpReport $skpReport)
     {
-        // Mendapatkan ID posisi yang mengandung kata "KETUA"
-        $kepalaPosisiIds = Position::where('nama_jabatan', 'LIKE', '%KETUA%')->pluck('id');
+        // Mendapatkan ID posisi yang mengandung kata "KEPALA"
+        $kepalaPosisiIds = FunctionalPosition::where('nama_jabatan_fungsional', 'LIKE', '%KEPALA%')->pluck('id');
 
         $validatedData = $request->validate([
             'periode_mulai' => 'required|date',

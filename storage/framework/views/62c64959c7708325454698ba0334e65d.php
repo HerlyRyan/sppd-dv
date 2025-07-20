@@ -1,4 +1,8 @@
 <?php $__env->startSection('content'); ?>
+    <?php
+        $user = Auth::user();
+        $pegawai = \App\Models\Employee::where('nip', $user->username)->first();
+    ?>
     <div class="container py-4">
         <div class="card shadow-sm">
             <div class="card-header bg-primary text-white">
@@ -87,7 +91,8 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                                id="tanggal_penilaian" name="tanggal_penilaian" value="<?php echo e(old('tanggal_penilaian', date('Y-m-d'))); ?>" required>
+                                id="tanggal_penilaian" name="tanggal_penilaian"
+                                value="<?php echo e(old('tanggal_penilaian', date('Y-m-d'))); ?>" required>
                             <?php $__errorArgs = ['tanggal_penilaian'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -99,10 +104,11 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="pegawai_id" class="form-label">Pegawai Yang Dinilai</label>
-                            <select name="pegawai_id" id="pegawai_id"
-                                class="form-select <?php $__errorArgs = ['pegawai_id'];
+                        <?php if($user->role == 'admin'): ?>
+                            <div class="col-md-6 mb-3">
+                                <label for="pegawai_id" class="form-label">Pegawai Yang Dinilai</label>
+                                <select name="pegawai_id" id="pegawai_id"
+                                    class="form-select <?php $__errorArgs = ['pegawai_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -110,26 +116,57 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" required>
-                                <option value="" selected>-- Pilih Pegawai --</option>
-                                
-                                <?php $__currentLoopData = $pegawaiOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $pegawai): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <option value="<?php echo e($pegawai->id); ?>" <?php if(old('pegawai_id') == $pegawai->id): echo 'selected'; endif; ?>>
-                                        <?php echo e($pegawai->nama_pegawai); ?> (NIP: <?php echo e($pegawai->nip); ?>) - <?php echo e($pegawai->position->nama_jabatan); ?>
+                                    <option value="" selected>-- Pilih Pegawai --</option>
+                                    
+                                    <?php $__currentLoopData = $pegawaiOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $pegawai): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <option value="<?php echo e($pegawai->id); ?>" <?php if(old('pegawai_id') == $pegawai->id): echo 'selected'; endif; ?>>
+                                            <?php echo e($pegawai->nama_pegawai); ?> (NIP: <?php echo e($pegawai->nip); ?>) -
+                                            <?php echo e($pegawai->functional_position->nama_jabatan_fungsional); ?>
 
-                                    </option>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                            </select>
-                            <?php $__errorArgs = ['pegawai_id'];
+                                        </option>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </select>
+                                <?php $__errorArgs = ['pegawai_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                                <div class="invalid-feedback"><?php echo e($message); ?></div>
-                            <?php unset($message);
+                                    <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
-                        </div>
+                            </div>
+                        <?php else: ?>
+                            <div class="col-md-6 mb-3">
+                                <label for="pegawai_id" class="form-label">Pegawai Yang Dinilai</label>
+                                <input type="text" class="form-control <?php $__errorArgs = ['pegawai_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                    id="pegawai_nama" value="<?php echo e($pegawai ? $pegawai->nama_pegawai : '-'); ?>" readonly>
+
+                                <input type="hidden" name="pegawai_id" value="<?php echo e($pegawai ? $pegawai->id : ''); ?>">
+
+                                <?php $__errorArgs = ['pegawai_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <div class="invalid-feedback d-block">
+                                        <?php echo e($message); ?>
+
+                                    </div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                            </div>
+                        <?php endif; ?>
                         <div class="col-md-6 mb-3">
                             <label for="penilai_id" class="form-label">Pejabat Penilai Kinerja</label>
                             <select name="penilai_id" id="penilai_id"
@@ -145,7 +182,8 @@ unset($__errorArgs, $__bag); ?>" required>
                                 
                                 <?php $__currentLoopData = $penilaiOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $penilai): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <option value="<?php echo e($penilai->id); ?>" <?php if(old('penilai_id') == $penilai->id): echo 'selected'; endif; ?>>
-                                        <?php echo e($penilai->nama_pegawai); ?> (NIP: <?php echo e($penilai->nip); ?>) - <?php echo e($penilai->position->nama_jabatan); ?>
+                                        <?php echo e($penilai->nama_pegawai); ?> (NIP: <?php echo e($penilai->nip); ?>) -
+                                        <?php echo e($penilai->functional_position->nama_jabatan_fungsional); ?>
 
                                     </option>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -170,7 +208,8 @@ unset($__errorArgs, $__bag); ?>
                         <input type="hidden" name="work_results[0][type]" value="utama">
 
                         <div class="col-12 mb-3">
-                            <label for="rencana_pimpinan_0" class="form-label">Rencana Hasil Kerja Pimpinan yang Diintervensi</label>
+                            <label for="rencana_pimpinan_0" class="form-label">Rencana Hasil Kerja Pimpinan yang
+                                Diintervensi</label>
                             <textarea name="work_results[0][rencana_hasil_kerja_pimpinan]" id="rencana_pimpinan_0"
                                 class="form-control <?php $__errorArgs = ['work_results.0.rencana_hasil_kerja_pimpinan'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -179,8 +218,7 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>"
-                                rows="3"><?php echo e(old('work_results.0.rencana_hasil_kerja_pimpinan')); ?></textarea>
+unset($__errorArgs, $__bag); ?>" rows="3"><?php echo e(old('work_results.0.rencana_hasil_kerja_pimpinan')); ?></textarea>
                             <?php $__errorArgs = ['work_results.0.rencana_hasil_kerja_pimpinan'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -202,8 +240,7 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>"
-                                rows="3" required><?php echo e(old('work_results.0.rencana_hasil_kerja')); ?></textarea>
+unset($__errorArgs, $__bag); ?>" rows="3" required><?php echo e(old('work_results.0.rencana_hasil_kerja')); ?></textarea>
                             <?php $__errorArgs = ['work_results.0.rencana_hasil_kerja'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -220,12 +257,15 @@ unset($__errorArgs, $__bag); ?>
                         <h6 class="mb-2 text-secondary">Indikator Kinerja Individu</h6>
                         <div class="col-md-4 mb-3">
                             <label for="indikator_aspek_0_0" class="form-label">Aspek (Kuantitas)</label>
-                            <input type="text" name="work_results[0][performance_indicators][0][aspek]" value="Kuantitas" class="form-control" readonly>
+                            <input type="text" name="work_results[0][performance_indicators][0][aspek]"
+                                value="Kuantitas" class="form-control" readonly>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="indikator_individu_0_0" class="form-label">Indikator Kinerja</label>
-                            <input type="text" name="work_results[0][performance_indicators][0][indikator_kinerja_individu]"
-                                id="indikator_individu_0_0" class="form-control <?php $__errorArgs = ['work_results.0.performance_indicators.0.indikator_kinerja_individu'];
+                            <input type="text"
+                                name="work_results[0][performance_indicators][0][indikator_kinerja_individu]"
+                                id="indikator_individu_0_0"
+                                class="form-control <?php $__errorArgs = ['work_results.0.performance_indicators.0.indikator_kinerja_individu'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -233,7 +273,8 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                                value="<?php echo e(old('work_results.0.performance_indicators.0.indikator_kinerja_individu')); ?>" required>
+                                value="<?php echo e(old('work_results.0.performance_indicators.0.indikator_kinerja_individu')); ?>"
+                                required>
                             <?php $__errorArgs = ['work_results.0.performance_indicators.0.indikator_kinerja_individu'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -248,7 +289,8 @@ unset($__errorArgs, $__bag); ?>
                         <div class="col-md-4 mb-3">
                             <label for="indikator_target_0_0" class="form-label">Target</label>
                             <input type="text" name="work_results[0][performance_indicators][0][target]"
-                                id="indikator_target_0_0" class="form-control <?php $__errorArgs = ['work_results.0.performance_indicators.0.target'];
+                                id="indikator_target_0_0"
+                                class="form-control <?php $__errorArgs = ['work_results.0.performance_indicators.0.target'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -271,12 +313,15 @@ unset($__errorArgs, $__bag); ?>
                         
                         <div class="col-md-4 mb-3">
                             <label for="indikator_aspek_0_1" class="form-label">Aspek (Kualitas)</label>
-                            <input type="text" name="work_results[0][performance_indicators][1][aspek]" value="Kualitas" class="form-control" readonly>
+                            <input type="text" name="work_results[0][performance_indicators][1][aspek]"
+                                value="Kualitas" class="form-control" readonly>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="indikator_individu_0_1" class="form-label">Indikator Kinerja</label>
-                            <input type="text" name="work_results[0][performance_indicators][1][indikator_kinerja_individu]"
-                                id="indikator_individu_0_1" class="form-control <?php $__errorArgs = ['work_results.0.performance_indicators.1.indikator_kinerja_individu'];
+                            <input type="text"
+                                name="work_results[0][performance_indicators][1][indikator_kinerja_individu]"
+                                id="indikator_individu_0_1"
+                                class="form-control <?php $__errorArgs = ['work_results.0.performance_indicators.1.indikator_kinerja_individu'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -284,7 +329,8 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                                value="<?php echo e(old('work_results.0.performance_indicators.1.indikator_kinerja_individu')); ?>" required>
+                                value="<?php echo e(old('work_results.0.performance_indicators.1.indikator_kinerja_individu')); ?>"
+                                required>
                             <?php $__errorArgs = ['work_results.0.performance_indicators.1.indikator_kinerja_individu'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -299,7 +345,8 @@ unset($__errorArgs, $__bag); ?>
                         <div class="col-md-4 mb-3">
                             <label for="indikator_target_0_1" class="form-label">Target</label>
                             <input type="text" name="work_results[0][performance_indicators][1][target]"
-                                id="indikator_target_0_1" class="form-control <?php $__errorArgs = ['work_results.0.performance_indicators.1.target'];
+                                id="indikator_target_0_1"
+                                class="form-control <?php $__errorArgs = ['work_results.0.performance_indicators.1.target'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -322,12 +369,15 @@ unset($__errorArgs, $__bag); ?>
                         
                         <div class="col-md-4 mb-3">
                             <label for="indikator_aspek_0_2" class="form-label">Aspek (Waktu)</label>
-                            <input type="text" name="work_results[0][performance_indicators][2][aspek]" value="Waktu" class="form-control" readonly>
+                            <input type="text" name="work_results[0][performance_indicators][2][aspek]" value="Waktu"
+                                class="form-control" readonly>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="indikator_individu_0_2" class="form-label">Indikator Kinerja</label>
-                            <input type="text" name="work_results[0][performance_indicators][2][indikator_kinerja_individu]"
-                                id="indikator_individu_0_2" class="form-control <?php $__errorArgs = ['work_results.0.performance_indicators.2.indikator_kinerja_individu'];
+                            <input type="text"
+                                name="work_results[0][performance_indicators][2][indikator_kinerja_individu]"
+                                id="indikator_individu_0_2"
+                                class="form-control <?php $__errorArgs = ['work_results.0.performance_indicators.2.indikator_kinerja_individu'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -335,7 +385,8 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                                value="<?php echo e(old('work_results.0.performance_indicators.2.indikator_kinerja_individu')); ?>" required>
+                                value="<?php echo e(old('work_results.0.performance_indicators.2.indikator_kinerja_individu')); ?>"
+                                required>
                             <?php $__errorArgs = ['work_results.0.performance_indicators.2.indikator_kinerja_individu'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -350,7 +401,8 @@ unset($__errorArgs, $__bag); ?>
                         <div class="col-md-4 mb-3">
                             <label for="indikator_target_0_2" class="form-label">Target</label>
                             <input type="text" name="work_results[0][performance_indicators][2][target]"
-                                id="indikator_target_0_2" class="form-control <?php $__errorArgs = ['work_results.0.performance_indicators.2.target'];
+                                id="indikator_target_0_2"
+                                class="form-control <?php $__errorArgs = ['work_results.0.performance_indicators.2.target'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -387,8 +439,7 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>"
-                                rows="3"><?php echo e(old('work_behaviors.0.deskripsi_perilaku', 'Memahami dan memenuhi kebutuhan masyarakat, Ramah, cekatan, solutif, dan dapat diandalkan, Melakukan perbaikan tiada henti')); ?></textarea>
+unset($__errorArgs, $__bag); ?>" rows="3"><?php echo e(old('work_behaviors.0.deskripsi_perilaku', 'Memahami dan memenuhi kebutuhan masyarakat, Ramah, cekatan, solutif, dan dapat diandalkan, Melakukan perbaikan tiada henti')); ?></textarea>
                             <?php $__errorArgs = ['work_behaviors.0.deskripsi_perilaku'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -403,7 +454,8 @@ unset($__errorArgs, $__bag); ?>
                         <div class="col-12 mb-3">
                             <label for="ekspektasi_pimpinan_0" class="form-label">Ekspektasi Khusus Pimpinan</label>
                             <input type="text" name="work_behaviors[0][ekspektasi_pimpinan]"
-                                id="ekspektasi_pimpinan_0" class="form-control <?php $__errorArgs = ['work_behaviors.0.ekspektasi_pimpinan'];
+                                id="ekspektasi_pimpinan_0"
+                                class="form-control <?php $__errorArgs = ['work_behaviors.0.ekspektasi_pimpinan'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -438,9 +490,9 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>"
-                                rows="3"><?php echo e(old('resource_names', 'sumber daya manusia, anggaran, peralatan kerja, pendampingan Pimpinan, sarana dan prasarana')); ?></textarea>
-                            <small class="form-text text-muted">Contoh: sumber daya manusia, anggaran, peralatan kerja</small>
+unset($__errorArgs, $__bag); ?>" rows="3"><?php echo e(old('resource_names', 'sumber daya manusia, anggaran, peralatan kerja, pendampingan Pimpinan, sarana dan prasarana')); ?></textarea>
+                            <small class="form-text text-muted">Contoh: sumber daya manusia, anggaran, peralatan
+                                kerja</small>
                             <?php $__errorArgs = ['resource_names'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -458,7 +510,8 @@ unset($__errorArgs, $__bag); ?>
                     <div class="row mb-4 border-bottom pb-3">
                         <h5 class="mb-3 text-primary">Pertanggungjawaban (Skema)</h5>
                         <div class="col-12 mb-3">
-                            <label for="accountability_description" class="form-label">Deskripsi Pertanggungjawaban</label>
+                            <label for="accountability_description" class="form-label">Deskripsi
+                                Pertanggungjawaban</label>
                             <textarea name="accountability_description" id="accountability_description"
                                 class="form-control <?php $__errorArgs = ['accountability_description'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -467,8 +520,7 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>"
-                                rows="3"><?php echo e(old('accountability_description', 'Pimpinan dan Pegawai juga harus menyepakati waktu pelaporan perkembangan hasil kerja untuk pemantauan kinerja Pegawai. Untuk pekerjaan yang sifatnya rutin, Pimpinan dan Pegawai dapat menyepakati waktu pelaporan perkembangan hasil kerja secara periodik/ berkala.')); ?></textarea>
+unset($__errorArgs, $__bag); ?>" rows="3"><?php echo e(old('accountability_description', 'Pimpinan dan Pegawai juga harus menyepakati waktu pelaporan perkembangan hasil kerja untuk pemantauan kinerja Pegawai. Untuk pekerjaan yang sifatnya rutin, Pimpinan dan Pegawai dapat menyepakati waktu pelaporan perkembangan hasil kerja secara periodik/ berkala.')); ?></textarea>
                             <?php $__errorArgs = ['accountability_description'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -495,8 +547,7 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>"
-                                rows="3"><?php echo e(old('consequence_description', 'penghargaan kepada Pegawai baik materiil maupun non materiil; dan/atau pemberian penugasan baru. pemberian teguran; dan/atau pengalihan penugasan.')); ?></textarea>
+unset($__errorArgs, $__bag); ?>" rows="3"><?php echo e(old('consequence_description', 'penghargaan kepada Pegawai baik materiil maupun non materiil; dan/atau pemberian penugasan baru. pemberian teguran; dan/atau pengalihan penugasan.')); ?></textarea>
                             <?php $__errorArgs = ['consequence_description'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -518,4 +569,5 @@ unset($__errorArgs, $__bag); ?>
         </div>
     </div>
 <?php $__env->stopSection(); ?>
+
 <?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\devi\resources\views/skp_reports/create.blade.php ENDPATH**/ ?>

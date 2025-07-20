@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
+    @php
+        $user = Auth::user();
+        $pegawai = \App\Models\Employee::where('nip', $user->username)->first();
+    @endphp
     <div class="container py-4">
         <div class="card shadow-sm">
             <div class="card-header bg-primary text-white">
@@ -53,27 +57,45 @@
                         <div class="col-md-6 mb-3">
                             <label for="tanggal_penilaian" class="form-label">Tanggal Penilaian</label>
                             <input type="date" class="form-control @error('tanggal_penilaian') is-invalid @enderror"
-                                id="tanggal_penilaian" name="tanggal_penilaian" value="{{ old('tanggal_penilaian', date('Y-m-d')) }}" required>
+                                id="tanggal_penilaian" name="tanggal_penilaian"
+                                value="{{ old('tanggal_penilaian', date('Y-m-d')) }}" required>
                             @error('tanggal_penilaian')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="pegawai_id" class="form-label">Pegawai Yang Dinilai</label>
-                            <select name="pegawai_id" id="pegawai_id"
-                                class="form-select @error('pegawai_id') is-invalid @enderror" required>
-                                <option value="" selected>-- Pilih Pegawai --</option>
-                                {{-- $pegawaiOptions harus disediakan dari controller, berisi user dengan jabatan bukan kepala bidang --}}
-                                @foreach ($pegawaiOptions as $pegawai)
-                                    <option value="{{ $pegawai->id }}" @selected(old('pegawai_id') == $pegawai->id)>
-                                        {{ $pegawai->nama_pegawai }} (NIP: {{ $pegawai->nip }}) - {{ $pegawai->position->nama_jabatan }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('pegawai_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                        @if ($user->role == 'admin')
+                            <div class="col-md-6 mb-3">
+                                <label for="pegawai_id" class="form-label">Pegawai Yang Dinilai</label>
+                                <select name="pegawai_id" id="pegawai_id"
+                                    class="form-select @error('pegawai_id') is-invalid @enderror" required>
+                                    <option value="" selected>-- Pilih Pegawai --</option>
+                                    {{-- $pegawaiOptions harus disediakan dari controller, berisi user dengan jabatan bukan kepala bidang --}}
+                                    @foreach ($pegawaiOptions as $pegawai)
+                                        <option value="{{ $pegawai->id }}" @selected(old('pegawai_id') == $pegawai->id)>
+                                            {{ $pegawai->nama_pegawai }} (NIP: {{ $pegawai->nip }}) -
+                                            {{ $pegawai->functional_position->nama_jabatan_fungsional }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('pegawai_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        @else
+                            <div class="col-md-6 mb-3">
+                                <label for="pegawai_id" class="form-label">Pegawai Yang Dinilai</label>
+                                <input type="text" class="form-control @error('pegawai_id') is-invalid @enderror"
+                                    id="pegawai_nama" value="{{ $pegawai ? $pegawai->nama_pegawai : '-' }}" readonly>
+
+                                <input type="hidden" name="pegawai_id" value="{{ $pegawai ? $pegawai->id : '' }}">
+
+                                @error('pegawai_id')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        @endif
                         <div class="col-md-6 mb-3">
                             <label for="penilai_id" class="form-label">Pejabat Penilai Kinerja</label>
                             <select name="penilai_id" id="penilai_id"
@@ -82,7 +104,8 @@
                                 {{-- $penilaiOptions harus disediakan dari controller, berisi user dengan jabatan kepala bidang --}}
                                 @foreach ($penilaiOptions as $penilai)
                                     <option value="{{ $penilai->id }}" @selected(old('penilai_id') == $penilai->id)>
-                                        {{ $penilai->nama_pegawai }} (NIP: {{ $penilai->nip }}) - {{ $penilai->position->nama_jabatan }}
+                                        {{ $penilai->nama_pegawai }} (NIP: {{ $penilai->nip }}) -
+                                        {{ $penilai->functional_position->nama_jabatan_fungsional }}
                                     </option>
                                 @endforeach
                             </select>
@@ -99,10 +122,10 @@
                         <input type="hidden" name="work_results[0][type]" value="utama">
 
                         <div class="col-12 mb-3">
-                            <label for="rencana_pimpinan_0" class="form-label">Rencana Hasil Kerja Pimpinan yang Diintervensi</label>
+                            <label for="rencana_pimpinan_0" class="form-label">Rencana Hasil Kerja Pimpinan yang
+                                Diintervensi</label>
                             <textarea name="work_results[0][rencana_hasil_kerja_pimpinan]" id="rencana_pimpinan_0"
-                                class="form-control @error('work_results.0.rencana_hasil_kerja_pimpinan') is-invalid @enderror"
-                                rows="3">{{ old('work_results.0.rencana_hasil_kerja_pimpinan') }}</textarea>
+                                class="form-control @error('work_results.0.rencana_hasil_kerja_pimpinan') is-invalid @enderror" rows="3">{{ old('work_results.0.rencana_hasil_kerja_pimpinan') }}</textarea>
                             @error('work_results.0.rencana_hasil_kerja_pimpinan')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -110,8 +133,7 @@
                         <div class="col-12 mb-3">
                             <label for="rencana_kerja_0" class="form-label">Rencana Hasil Kerja Individu</label>
                             <textarea name="work_results[0][rencana_hasil_kerja]" id="rencana_kerja_0"
-                                class="form-control @error('work_results.0.rencana_hasil_kerja') is-invalid @enderror"
-                                rows="3" required>{{ old('work_results.0.rencana_hasil_kerja') }}</textarea>
+                                class="form-control @error('work_results.0.rencana_hasil_kerja') is-invalid @enderror" rows="3" required>{{ old('work_results.0.rencana_hasil_kerja') }}</textarea>
                             @error('work_results.0.rencana_hasil_kerja')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -121,13 +143,17 @@
                         <h6 class="mb-2 text-secondary">Indikator Kinerja Individu</h6>
                         <div class="col-md-4 mb-3">
                             <label for="indikator_aspek_0_0" class="form-label">Aspek (Kuantitas)</label>
-                            <input type="text" name="work_results[0][performance_indicators][0][aspek]" value="Kuantitas" class="form-control" readonly>
+                            <input type="text" name="work_results[0][performance_indicators][0][aspek]"
+                                value="Kuantitas" class="form-control" readonly>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="indikator_individu_0_0" class="form-label">Indikator Kinerja</label>
-                            <input type="text" name="work_results[0][performance_indicators][0][indikator_kinerja_individu]"
-                                id="indikator_individu_0_0" class="form-control @error('work_results.0.performance_indicators.0.indikator_kinerja_individu') is-invalid @enderror"
-                                value="{{ old('work_results.0.performance_indicators.0.indikator_kinerja_individu') }}" required>
+                            <input type="text"
+                                name="work_results[0][performance_indicators][0][indikator_kinerja_individu]"
+                                id="indikator_individu_0_0"
+                                class="form-control @error('work_results.0.performance_indicators.0.indikator_kinerja_individu') is-invalid @enderror"
+                                value="{{ old('work_results.0.performance_indicators.0.indikator_kinerja_individu') }}"
+                                required>
                             @error('work_results.0.performance_indicators.0.indikator_kinerja_individu')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -135,7 +161,8 @@
                         <div class="col-md-4 mb-3">
                             <label for="indikator_target_0_0" class="form-label">Target</label>
                             <input type="text" name="work_results[0][performance_indicators][0][target]"
-                                id="indikator_target_0_0" class="form-control @error('work_results.0.performance_indicators.0.target') is-invalid @enderror"
+                                id="indikator_target_0_0"
+                                class="form-control @error('work_results.0.performance_indicators.0.target') is-invalid @enderror"
                                 value="{{ old('work_results.0.performance_indicators.0.target') }}" required>
                             @error('work_results.0.performance_indicators.0.target')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -144,13 +171,17 @@
                         {{-- Contoh Indikator Kualitas --}}
                         <div class="col-md-4 mb-3">
                             <label for="indikator_aspek_0_1" class="form-label">Aspek (Kualitas)</label>
-                            <input type="text" name="work_results[0][performance_indicators][1][aspek]" value="Kualitas" class="form-control" readonly>
+                            <input type="text" name="work_results[0][performance_indicators][1][aspek]"
+                                value="Kualitas" class="form-control" readonly>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="indikator_individu_0_1" class="form-label">Indikator Kinerja</label>
-                            <input type="text" name="work_results[0][performance_indicators][1][indikator_kinerja_individu]"
-                                id="indikator_individu_0_1" class="form-control @error('work_results.0.performance_indicators.1.indikator_kinerja_individu') is-invalid @enderror"
-                                value="{{ old('work_results.0.performance_indicators.1.indikator_kinerja_individu') }}" required>
+                            <input type="text"
+                                name="work_results[0][performance_indicators][1][indikator_kinerja_individu]"
+                                id="indikator_individu_0_1"
+                                class="form-control @error('work_results.0.performance_indicators.1.indikator_kinerja_individu') is-invalid @enderror"
+                                value="{{ old('work_results.0.performance_indicators.1.indikator_kinerja_individu') }}"
+                                required>
                             @error('work_results.0.performance_indicators.1.indikator_kinerja_individu')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -158,7 +189,8 @@
                         <div class="col-md-4 mb-3">
                             <label for="indikator_target_0_1" class="form-label">Target</label>
                             <input type="text" name="work_results[0][performance_indicators][1][target]"
-                                id="indikator_target_0_1" class="form-control @error('work_results.0.performance_indicators.1.target') is-invalid @enderror"
+                                id="indikator_target_0_1"
+                                class="form-control @error('work_results.0.performance_indicators.1.target') is-invalid @enderror"
                                 value="{{ old('work_results.0.performance_indicators.1.target') }}" required>
                             @error('work_results.0.performance_indicators.1.target')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -167,13 +199,17 @@
                         {{-- Contoh Indikator Waktu --}}
                         <div class="col-md-4 mb-3">
                             <label for="indikator_aspek_0_2" class="form-label">Aspek (Waktu)</label>
-                            <input type="text" name="work_results[0][performance_indicators][2][aspek]" value="Waktu" class="form-control" readonly>
+                            <input type="text" name="work_results[0][performance_indicators][2][aspek]" value="Waktu"
+                                class="form-control" readonly>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="indikator_individu_0_2" class="form-label">Indikator Kinerja</label>
-                            <input type="text" name="work_results[0][performance_indicators][2][indikator_kinerja_individu]"
-                                id="indikator_individu_0_2" class="form-control @error('work_results.0.performance_indicators.2.indikator_kinerja_individu') is-invalid @enderror"
-                                value="{{ old('work_results.0.performance_indicators.2.indikator_kinerja_individu') }}" required>
+                            <input type="text"
+                                name="work_results[0][performance_indicators][2][indikator_kinerja_individu]"
+                                id="indikator_individu_0_2"
+                                class="form-control @error('work_results.0.performance_indicators.2.indikator_kinerja_individu') is-invalid @enderror"
+                                value="{{ old('work_results.0.performance_indicators.2.indikator_kinerja_individu') }}"
+                                required>
                             @error('work_results.0.performance_indicators.2.indikator_kinerja_individu')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -181,7 +217,8 @@
                         <div class="col-md-4 mb-3">
                             <label for="indikator_target_0_2" class="form-label">Target</label>
                             <input type="text" name="work_results[0][performance_indicators][2][target]"
-                                id="indikator_target_0_2" class="form-control @error('work_results.0.performance_indicators.2.target') is-invalid @enderror"
+                                id="indikator_target_0_2"
+                                class="form-control @error('work_results.0.performance_indicators.2.target') is-invalid @enderror"
                                 value="{{ old('work_results.0.performance_indicators.2.target') }}" required>
                             @error('work_results.0.performance_indicators.2.target')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -197,8 +234,7 @@
                         <div class="col-12 mb-3">
                             <label for="deskripsi_perilaku_0" class="form-label">Deskripsi Perilaku</label>
                             <textarea name="work_behaviors[0][deskripsi_perilaku]" id="deskripsi_perilaku_0"
-                                class="form-control @error('work_behaviors.0.deskripsi_perilaku') is-invalid @enderror"
-                                rows="3">{{ old('work_behaviors.0.deskripsi_perilaku', 'Memahami dan memenuhi kebutuhan masyarakat, Ramah, cekatan, solutif, dan dapat diandalkan, Melakukan perbaikan tiada henti') }}</textarea>
+                                class="form-control @error('work_behaviors.0.deskripsi_perilaku') is-invalid @enderror" rows="3">{{ old('work_behaviors.0.deskripsi_perilaku', 'Memahami dan memenuhi kebutuhan masyarakat, Ramah, cekatan, solutif, dan dapat diandalkan, Melakukan perbaikan tiada henti') }}</textarea>
                             @error('work_behaviors.0.deskripsi_perilaku')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -206,7 +242,8 @@
                         <div class="col-12 mb-3">
                             <label for="ekspektasi_pimpinan_0" class="form-label">Ekspektasi Khusus Pimpinan</label>
                             <input type="text" name="work_behaviors[0][ekspektasi_pimpinan]"
-                                id="ekspektasi_pimpinan_0" class="form-control @error('work_behaviors.0.ekspektasi_pimpinan') is-invalid @enderror"
+                                id="ekspektasi_pimpinan_0"
+                                class="form-control @error('work_behaviors.0.ekspektasi_pimpinan') is-invalid @enderror"
                                 value="{{ old('work_behaviors.0.ekspektasi_pimpinan', 'Sesuai Ekspektasi') }}" required>
                             @error('work_behaviors.0.ekspektasi_pimpinan')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -220,9 +257,9 @@
                         <div class="col-12 mb-3">
                             <label for="resource_names" class="form-label">Nama Sumber Daya</label>
                             <textarea name="resource_names" id="resource_names"
-                                class="form-control @error('resource_names') is-invalid @enderror"
-                                rows="3">{{ old('resource_names', 'sumber daya manusia, anggaran, peralatan kerja, pendampingan Pimpinan, sarana dan prasarana') }}</textarea>
-                            <small class="form-text text-muted">Contoh: sumber daya manusia, anggaran, peralatan kerja</small>
+                                class="form-control @error('resource_names') is-invalid @enderror" rows="3">{{ old('resource_names', 'sumber daya manusia, anggaran, peralatan kerja, pendampingan Pimpinan, sarana dan prasarana') }}</textarea>
+                            <small class="form-text text-muted">Contoh: sumber daya manusia, anggaran, peralatan
+                                kerja</small>
                             @error('resource_names')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -233,10 +270,10 @@
                     <div class="row mb-4 border-bottom pb-3">
                         <h5 class="mb-3 text-primary">Pertanggungjawaban (Skema)</h5>
                         <div class="col-12 mb-3">
-                            <label for="accountability_description" class="form-label">Deskripsi Pertanggungjawaban</label>
+                            <label for="accountability_description" class="form-label">Deskripsi
+                                Pertanggungjawaban</label>
                             <textarea name="accountability_description" id="accountability_description"
-                                class="form-control @error('accountability_description') is-invalid @enderror"
-                                rows="3">{{ old('accountability_description', 'Pimpinan dan Pegawai juga harus menyepakati waktu pelaporan perkembangan hasil kerja untuk pemantauan kinerja Pegawai. Untuk pekerjaan yang sifatnya rutin, Pimpinan dan Pegawai dapat menyepakati waktu pelaporan perkembangan hasil kerja secara periodik/ berkala.') }}</textarea>
+                                class="form-control @error('accountability_description') is-invalid @enderror" rows="3">{{ old('accountability_description', 'Pimpinan dan Pegawai juga harus menyepakati waktu pelaporan perkembangan hasil kerja untuk pemantauan kinerja Pegawai. Untuk pekerjaan yang sifatnya rutin, Pimpinan dan Pegawai dapat menyepakati waktu pelaporan perkembangan hasil kerja secara periodik/ berkala.') }}</textarea>
                             @error('accountability_description')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -249,8 +286,7 @@
                         <div class="col-12 mb-3">
                             <label for="consequence_description" class="form-label">Deskripsi Konsekuensi</label>
                             <textarea name="consequence_description" id="consequence_description"
-                                class="form-control @error('consequence_description') is-invalid @enderror"
-                                rows="3">{{ old('consequence_description', 'penghargaan kepada Pegawai baik materiil maupun non materiil; dan/atau pemberian penugasan baru. pemberian teguran; dan/atau pengalihan penugasan.') }}</textarea>
+                                class="form-control @error('consequence_description') is-invalid @enderror" rows="3">{{ old('consequence_description', 'penghargaan kepada Pegawai baik materiil maupun non materiil; dan/atau pemberian penugasan baru. pemberian teguran; dan/atau pengalihan penugasan.') }}</textarea>
                             @error('consequence_description')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror

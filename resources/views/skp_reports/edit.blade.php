@@ -33,7 +33,9 @@
                     @method('PUT')
 
                     @php
-                        $role = Auth::user()->role;
+                        $user = Auth::user();
+                        $role = $user->role;
+                        $pegawai = \App\Models\Employee::where('nip', $user->username)->first();
                     @endphp
 
                     {{-- Bagian Informasi Utama SKP --}}
@@ -71,7 +73,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="pegawai_id" class="form-label">Pegawai Yang Dinilai</label>
-                            @if($role === 'admin' || $role === 'pegawai_unit_kerja')
+                            @if ($role === 'admin')
                                 <select name="pegawai_id" id="pegawai_id"
                                     class="form-select @error('pegawai_id') is-invalid @enderror" required>
                                     <option value="">-- Pilih Pegawai --</option>
@@ -82,9 +84,22 @@
                                         </option>
                                     @endforeach
                                 </select>
+                            @elseif ($role === 'pegawai_unit_kerja')
+                                <input type="text" class="form-control @error('pegawai_id') is-invalid @enderror"
+                                    id="pegawai_nama" value="{{ $pegawai ? $pegawai->nama_pegawai : '-' }}" readonly>
+
+                                <input type="hidden" name="pegawai_id" value="{{ $pegawai ? $pegawai->id : '' }}">
+
+                                @error('pegawai_id')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             @else
                                 <input type="hidden" name="pegawai_id" value="{{ $skpReport->pegawai_id }}">
-                                <input type="text" class="form-control" value="{{ $skpReport->pegawai->nama_pegawai ?? '' }} (NIP: {{ $skpReport->pegawai->nip ?? '' }}) - {{ $skpReport->pegawai->position->nama_jabatan ?? 'N/A' }}" readonly>
+                                <input type="text" class="form-control"
+                                    value="{{ $skpReport->pegawai->nama_pegawai ?? '' }} (NIP: {{ $skpReport->pegawai->nip ?? '' }}) - {{ $skpReport->pegawai->position->nama_jabatan ?? 'N/A' }}"
+                                    readonly>
                             @endif
                             @error('pegawai_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -97,7 +112,7 @@
                                 {{ $role !== 'admin' && $role !== 'pegawai_unit_kerja' ? 'readonly' : '' }} required>
                                 <option value="">-- Pilih Penilai --</option>
                                 @foreach ($penilaiOptions as $penilai)
-                                    <option value="{{ $penilai->id }}" @selected(old('penilai_id', $skpReport->penilai_id) == $penilai->id) >
+                                    <option value="{{ $penilai->id }}" @selected(old('penilai_id', $skpReport->penilai_id) == $penilai->id)>
                                         {{ $penilai->nama_pegawai }} (NIP: {{ $penilai->nip }}) -
                                         {{ $penilai->position->nama_jabatan ?? 'N/A' }}
                                     </option>
