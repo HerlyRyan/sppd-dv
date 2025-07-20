@@ -196,7 +196,11 @@ class Surat extends Component
 
     public function render()
     {
-        $employees = Employee::where('status', 'aktif')->get();
+        $employees = Employee::join('users', 'employees.nip', '=', 'users.username')
+                ->where('employees.status', 'aktif')
+                ->where('users.role', 'pegawai_bkn')
+                ->select('employees.*')
+                ->get();
 
         return view('livewire.surat', compact(
             'employees'

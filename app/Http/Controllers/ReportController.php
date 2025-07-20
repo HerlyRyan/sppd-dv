@@ -47,8 +47,9 @@ class ReportController extends Controller
                 'a.instansi as unit_kerja',
                 DB::raw('COUNT(s.id) as total_skp')
             )
-            ->groupBy('e.id')
+            ->groupBy('e.id', 'e.nama_pegawai', 'p.nama_jabatan', 'a.instansi')
             ->get();
+
 
         return view('report.grafik_skp.index', compact('data'));
     }
@@ -65,8 +66,9 @@ class ReportController extends Controller
                 'a.instansi as unit_kerja',
                 DB::raw('COUNT(s.id) as total_skp')
             )
-            ->groupBy('e.id')
+            ->groupBy('e.id', 'e.nama_pegawai', 'p.nama_jabatan', 'a.instansi')
             ->get();
+
 
         return view('report.grafik_skp.print', compact('data'));
     }
@@ -123,8 +125,9 @@ class ReportController extends Controller
                 DB::raw('COUNT(s.id) as jumlah_sppd'),
                 DB::raw('SUM(DATEDIFF(s.tanggal_kembali, s.tanggal_berangkat) + 1) as total_hari_hadir')
             )
-            ->groupBy('e.id')
+            ->groupBy('e.id', 'e.nama_pegawai', 'a.instansi')
             ->get();
+
 
         return view('report.kehadiran_tahunan.index', compact('data', 'tahun'));
     }
@@ -142,7 +145,7 @@ class ReportController extends Controller
                 DB::raw('COUNT(s.id) as jumlah_sppd'),
                 DB::raw('SUM(DATEDIFF(s.tanggal_kembali, s.tanggal_berangkat) + 1) as total_hari_hadir')
             )
-            ->groupBy('e.id')
+            ->groupBy('e.id', 'e.nama_pegawai', 'a.instansi')
             ->get();
 
         return view('report.kehadiran_tahunan.print', compact('data', 'tahun'));

@@ -74,6 +74,10 @@
                                         class="sidebar-link {{ Request::is('agencies*') ? 'active' : '' }}"
                                         href="{{ route('agencies.index') }}"><i class="ti ti-building"></i><span
                                             class="hide-menu">Instansi</span></a></li>
+                                <li class="sidebar-item"><a
+                                        class="sidebar-link {{ Request::is('unit_kerja*') ? 'active' : '' }}"
+                                        href="{{ route('unit_kerja.index') }}"><i class="ti ti-building"></i><span
+                                            class="hide-menu">Unit Kerja</span></a></li>
 
                                 <li class="sidebar-item"><a
                                         class="sidebar-link {{ Request::is('surat*') ? 'active' : '' }}"
@@ -98,7 +102,7 @@
 
                                 <li class="nav-small-cap"><span class="hide-menu">Laporan</span></li>
                                 <li class="sidebar-item"><a class="sidebar-link {{ Request::is('laporan.pegawai.*') ? 'active' : '' }}"
-                                        href="{{ route('laporan.pegawai.index') }}"><i class="ti ti-car"></i><span
+                                        href="{{ route('laporan.pegawai.index') }}"><i class="ti ti-report"></i><span
                                             class="hide-menu">Pegawai</span></a></li>
                                 <li class="sidebar-item"><a
                                         class="sidebar-link {{ Request::is('laporan.grafik-skp.*') ? 'active' : '' }}"

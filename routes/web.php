@@ -11,6 +11,7 @@ use App\Http\Controllers\SppdController;
 use App\Http\Controllers\LpjHeaderController;
 use App\Http\Controllers\FunctionalPositionController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\UnitKerjaController;
 use App\Models\Employee;
 use Illuminate\Support\Facades\DB;
 use SebastianBergmann\CodeCoverage\Report\Xml\Report;
@@ -38,6 +39,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         'grades' => GradeController::class,
         'agencies' => AgencyController::class,
         'functional-positions' => FunctionalPositionController::class,
+        'unit_kerja' => UnitKerjaController::class,
     ]);
 
     Route::post('lpj-header/approve/{lpj_header}', [LpjHeaderController::class, 'approve'])->name('lpj-header.approve');
@@ -59,7 +61,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::get('/sppd-per-bulan', [ReportController::class, 'sppdPerBulan'])->name('sppd-per-bulan.index');
         Route::get('/sppd-per-bulan/print', [ReportController::class, 'printSppdPerBulan'])->name('sppd-per-bulan.print');
     });
-
 });
 
 // Pegawai BKN

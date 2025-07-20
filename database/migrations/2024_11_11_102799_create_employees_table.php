@@ -15,12 +15,13 @@ return new class extends Migration
             $table->id();
             $table->foreignId('position_id')->constrained('positions');
             $table->foreignId('grade_id')->constrained('grades');
-            $table->foreignId('agency_id')->constrained('agencies');            
+            $table->foreignId('agency_id')->constrained('agencies');
+            $table->foreignId('unit_kerja_id')->constrained('unit_kerjas');
             $table->string('nip')->unique();
             $table->string('nama_pegawai');
             $table->string('npwp');
             $table->string('status');
-            $table->enum('jenis_kelamin', ['L', 'P']);        
+            $table->enum('jenis_kelamin', ['L', 'P']);
             $table->timestamps();
         });
     }
