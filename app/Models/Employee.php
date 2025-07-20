@@ -31,6 +31,11 @@ class Employee extends Model
         return $this->belongsTo(FunctionalPosition::class);
     }
 
+    public function unit_kerja()
+    {
+        return $this->belongsTo(UnitKerja::class);
+    }
+
     public function skpAsPegawai()
     {
         return $this->hasMany(SkpReport::class, 'pegawai_id');

@@ -11,6 +11,7 @@ use App\Models\WorkBehavior;
 use App\Models\SupportingResource;
 use App\Models\Accountability;
 use App\Models\Consequence;
+use App\Models\FunctionalPosition;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB; // Digunakan untuk transaksi database
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -64,17 +65,17 @@ class SkpReportController extends Controller
     public function create()
     {
         // Mendapatkan ID posisi yang mengandung kata "KETUA"
-        $kepalaPosisiIds = Position::where('nama_jabatan', 'LIKE', '%KETUA%')->pluck('id');
+        $kepalaPosisiIds = FunctionalPosition::where('nama_jabatan_fungsional', 'LIKE', '%KEPALA%')->pluck('id');
 
         // Mengambil daftar pegawai yang BUKAN berjabatan "KETUA"
-        $pegawaiOptions = Employee::whereNotIn('position_id', $kepalaPosisiIds)
-            ->with('position') // Eager load position untuk ditampilkan di view
+        $pegawaiOptions = Employee::whereNotIn('functional_position_id', $kepalaPosisiIds)
+            ->with('functional_position') // Eager load position untuk ditampilkan di view
             ->orderBy('nama_pegawai') // Menggunakan 'nama_pegawai' sesuai model Employee yang diberikan
             ->get();
 
         // Mengambil daftar pegawai yang adalah "KETUA" (sebagai penilai)
-        $penilaiOptions = Employee::whereIn('position_id', $kepalaPosisiIds)
-            ->with('position') // Eager load position untuk ditampilkan di view
+        $penilaiOptions = Employee::whereIn('functional_position_id', $kepalaPosisiIds)
+            ->with('functional_position') // Eager load position untuk ditampilkan di view
             ->orderBy('nama_pegawai') // Menggunakan 'nama_pegawai' sesuai model Employee yang diberikan
             ->get();
 
@@ -118,14 +119,14 @@ class SkpReportController extends Controller
             'consequence_description' => 'nullable|string|max:2000',
         ]);
 
-        $pegawai = Employee::with('position')->find($validatedData['pegawai_id']);
-        $penilai = Employee::with('position')->find($validatedData['penilai_id']); // Menggunakan Employee untuk penilai juga
+        $pegawai = Employee::with('functional_position')->find($validatedData['pegawai_id']);
+        $penilai = Employee::with('functional_position')->find($validatedData['penilai_id']); // Menggunakan Employee untuk penilai juga
 
-        if ($pegawai && in_array($pegawai->position_id, $kepalaPosisiIds->toArray())) {
+        if ($pegawai && in_array($pegawai->functional_position_id, $kepalaPosisiIds->toArray())) {
             return back()->withErrors(['pegawai_id' => 'Pegawai yang dinilai tidak boleh berjabatan Kepala.'])->withInput();
         }
 
-        if ($penilai && !in_array($penilai->position_id, $kepalaPosisiIds->toArray())) {
+        if ($penilai && !in_array($penilai->functional_position_id, $kepalaPosisiIds->toArray())) {
             return back()->withErrors(['penilai_id' => 'Penilai harus berjabatan Kepala.'])->withInput();
         }
 
@@ -230,8 +231,8 @@ class SkpReportController extends Controller
     {
         // Muat semua relasi yang diperlukan untuk mengisi formulir edit
         $skpReport->load([
-            'pegawai.position',
-            'penilai.position',
+            'pegawai.functional_position',
+            'penilai.functional_position',
             'workResults.performanceIndicators',
             'workBehaviors',
             'supportingResources',
@@ -240,18 +241,18 @@ class SkpReportController extends Controller
         ]);
 
         // Mendapatkan ID posisi yang mengandung kata "KETUA"
-        $kepalaPosisiIds = Position::where('nama_jabatan', 'LIKE', '%KETUA%')->pluck('id');
+        $kepalaPosisiIds = FunctionalPosition::where('nama_jabatan_fungsional', 'LIKE', '%KEPALA%')->pluck('id');
 
         // Mengambil daftar pegawai yang BUKAN berjabatan "KETUA"
-        $pegawaiOptions = Employee::whereNotIn('position_id', $kepalaPosisiIds)
-            ->with('position')
-            ->orderBy('nama_pegawai')
+        $pegawaiOptions = Employee::whereNotIn('functional_position_id', $kepalaPosisiIds)
+            ->with('functional_position') // Eager load position untuk ditampilkan di view
+            ->orderBy('nama_pegawai') // Menggunakan 'nama_pegawai' sesuai model Employee yang diberikan
             ->get();
 
         // Mengambil daftar pegawai yang adalah "KETUA" (sebagai penilai)
-        $penilaiOptions = Employee::whereIn('position_id', $kepalaPosisiIds)
-            ->with('position')
-            ->orderBy('nama_pegawai')
+        $penilaiOptions = Employee::whereIn('functional_position_id', $kepalaPosisiIds)
+            ->with('functional_position') // Eager load position untuk ditampilkan di view
+            ->orderBy('nama_pegawai') // Menggunakan 'nama_pegawai' sesuai model Employee yang diberikan
             ->get();
 
         return view('skp_reports.edit', compact('skpReport', 'pegawaiOptions', 'penilaiOptions'));
@@ -296,14 +297,14 @@ class SkpReportController extends Controller
             'consequence_description' => 'nullable|string|max:2000',
         ]);
 
-        $pegawai = Employee::with('position')->find($validatedData['pegawai_id']);
-        $penilai = Employee::with('position')->find($validatedData['penilai_id']);
+        $pegawai = Employee::with('functional_position')->find($validatedData['pegawai_id']);
+        $penilai = Employee::with('functional_position')->find($validatedData['penilai_id']);
 
-        if ($pegawai && in_array($pegawai->position_id, $kepalaPosisiIds->toArray())) {
+        if ($pegawai && in_array($pegawai->functional_position_id, $kepalaPosisiIds->toArray())) {
             return back()->withErrors(['pegawai_id' => 'Pegawai yang dinilai tidak boleh berjabatan Kepala.'])->withInput();
         }
 
-        if ($penilai && !in_array($penilai->position_id, $kepalaPosisiIds->toArray())) {
+        if ($penilai && !in_array($penilai->functional_position_id, $kepalaPosisiIds->toArray())) {
             return back()->withErrors(['penilai_id' => 'Penilai harus berjabatan Kepala.'])->withInput();
         }
 
@@ -400,8 +401,8 @@ class SkpReportController extends Controller
     public function download_surat(SkpReport $skpReport)
     {
         $skpReport->load([
-            'pegawai.position',
-            'penilai.position',
+            'pegawai.functional_position',
+            'penilai.functional_position',
             'workResults.performanceIndicators',
             'workBehaviors',
             'supportingResources',

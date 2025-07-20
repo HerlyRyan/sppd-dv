@@ -36,12 +36,12 @@
                             <tr>
                                 <td>JABATAN</td>
                                 <td>:</td>
-                                <td><?php echo e($skpReport->pegawai->position->nama_jabatan ?? 'N/A'); ?></td>
+                                <td><?php echo e($skpReport->pegawai->functional_position->nama_jabatan_fungsional ?? 'N/A'); ?></td>
                             </tr>
                             <tr>
                                 <td>UNIT KERJA</td>
                                 <td>:</td>
-                                <td><?php echo e($skpReport->pegawai->agency->instansi ?? 'N/A'); ?></td>
+                                <td><?php echo e($skpReport->pegawai->unit_kerja->nama_unit_kerja ?? 'N/A'); ?></td>
                             </tr>
                         </table>
                     </div>
@@ -66,12 +66,12 @@
                             <tr>
                                 <td>JABATAN</td>
                                 <td>:</td>
-                                <td><?php echo e($skpReport->penilai->position->nama_jabatan ?? 'N/A'); ?></td>
+                                <td><?php echo e($skpReport->penilai->functional_position->nama_jabatan_fungsional ?? 'N/A'); ?></td>
                             </tr>
                             <tr>
                                 <td>UNIT KERJA</td>
                                 <td>:</td>
-                                <td><?php echo e($skpReport->pegawai->agency->instansi ?? 'N/A'); ?></td>
+                                <td><?php echo e($skpReport->pegawai->unit_kerja->nama_unit_kerja ?? 'N/A'); ?></td>
                             </tr>
                         </table>
                     </div>

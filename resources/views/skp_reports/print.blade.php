@@ -267,20 +267,22 @@
             <tr>
                 <td class="no-col">4</td>
                 <td class="title-col">JABATAN</td>
-                <td class="value-col">{{ $skpReport->pegawai->position->nama_jabatan ?? '-' }}</td>
+                <td class="value-col">{{ $skpReport->pegawai->functional_position->nama_jabatan_fungsional ?? '-' }}
+                </td>
 
                 <td class="no-col">4</td>
                 <td class="title-col">JABATAN</td>
-                <td class="value-col">{{ $skpReport->penilai->position->nama_jabatan ?? '-' }}</td>
+                <td class="value-col">{{ $skpReport->penilai->functional_position->nama_jabatan_fungsional ?? '-' }}
+                </td>
             </tr>
             <tr>
                 <td class="no-col">5</td>
                 <td class="title-col">UNIT KERJA</td>
-                <td class="value-col">{{ $skpReport->pegawai->agency->instansi ?? '-' }}</td>
+                <td class="value-col">{{ $skpReport->pegawai->unit_kerja->nama_unit_kerja ?? '-' }}</td>
 
                 <td class="no-col">5</td>
                 <td class="title-col">UNIT KERJA</td>
-                <td class="value-col">{{ $skpReport->penilai->agency->instansi ?? '-' }}</td>
+                <td class="value-col">{{ $skpReport->penilai->unit_kerja->nama_unit_kerja ?? '-' }}</td>
             </tr>
         </tbody>
     </table>
