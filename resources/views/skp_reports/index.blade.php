@@ -209,18 +209,21 @@
                                                 <a href="{{ route('skp.print', $skpReport->id) }}"
                                                     class="btn btn-sm btn-success" target="_blank">Cetak</a>
                                             @endif
-                                            <a href="{{ route('skp.edit', $skpReport->id) }}" class="btn btn-sm btn-info"
-                                                title="Edit Data">
-                                                <i class="bi bi-pencil-square"></i> Edit
-                                            </a>
-                                            <form action="{{ route('skp.destroy', $skpReport->id) }}" method="POST"
-                                                onsubmit="return confirm('Yakin ingin menghapus data laporan SKP ini? Tindakan ini tidak dapat dibatalkan.');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger" title="Hapus Data">
-                                                    <i class="bi bi-trash"></i> Hapus
-                                                </button>
-                                            </form>
+                                            @if ($skpReport->status !== 'approved')
+                                                <a href="{{ route('skp.edit', $skpReport->id) }}"
+                                                    class="btn btn-sm btn-info" title="Edit Data">
+                                                    <i class="bi bi-pencil-square"></i> Edit
+                                                </a>
+                                                <form action="{{ route('skp.destroy', $skpReport->id) }}" method="POST"
+                                                    onsubmit="return confirm('Yakin ingin menghapus data laporan SKP ini? Tindakan ini tidak dapat dibatalkan.');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-danger"
+                                                        title="Hapus Data">
+                                                        <i class="bi bi-trash"></i> Hapus
+                                                    </button>
+                                                </form>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach

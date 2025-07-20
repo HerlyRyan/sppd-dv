@@ -209,18 +209,21 @@
                                                 <a href="<?php echo e(route('skp.print', $skpReport->id)); ?>"
                                                     class="btn btn-sm btn-success" target="_blank">Cetak</a>
                                             <?php endif; ?>
-                                            <a href="<?php echo e(route('skp.edit', $skpReport->id)); ?>" class="btn btn-sm btn-info"
-                                                title="Edit Data">
-                                                <i class="bi bi-pencil-square"></i> Edit
-                                            </a>
-                                            <form action="<?php echo e(route('skp.destroy', $skpReport->id)); ?>" method="POST"
-                                                onsubmit="return confirm('Yakin ingin menghapus data laporan SKP ini? Tindakan ini tidak dapat dibatalkan.');">
-                                                <?php echo csrf_field(); ?>
-                                                <?php echo method_field('DELETE'); ?>
-                                                <button type="submit" class="btn btn-sm btn-danger" title="Hapus Data">
-                                                    <i class="bi bi-trash"></i> Hapus
-                                                </button>
-                                            </form>
+                                            <?php if($skpReport->status !== 'approved'): ?>
+                                                <a href="<?php echo e(route('skp.edit', $skpReport->id)); ?>"
+                                                    class="btn btn-sm btn-info" title="Edit Data">
+                                                    <i class="bi bi-pencil-square"></i> Edit
+                                                </a>
+                                                <form action="<?php echo e(route('skp.destroy', $skpReport->id)); ?>" method="POST"
+                                                    onsubmit="return confirm('Yakin ingin menghapus data laporan SKP ini? Tindakan ini tidak dapat dibatalkan.');">
+                                                    <?php echo csrf_field(); ?>
+                                                    <?php echo method_field('DELETE'); ?>
+                                                    <button type="submit" class="btn btn-sm btn-danger"
+                                                        title="Hapus Data">
+                                                        <i class="bi bi-trash"></i> Hapus
+                                                    </button>
+                                                </form>
+                                            <?php endif; ?>
                                         </td>
                                     </tr>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
