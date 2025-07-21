@@ -75,7 +75,7 @@
                             <label for="pegawai_id" class="form-label">Pegawai Yang Dinilai</label>
                             @if ($role === 'admin')
                                 <select name="pegawai_id" id="pegawai_id"
-                                    class="form-select @error('pegawai_id') is-invalid @enderror" required>
+                                    class="form-select select2 @error('pegawai_id') is-invalid @enderror" required>
                                     <option value="">-- Pilih Pegawai --</option>
                                     @foreach ($pegawaiOptions as $pegawai)
                                         <option value="{{ $pegawai->id }}" @selected(old('pegawai_id', $skpReport->pegawai_id) == $pegawai->id)>
@@ -84,21 +84,22 @@
                                         </option>
                                     @endforeach
                                 </select>
-                            @elseif ($role === 'pegawai_unit_kerja')
-                                <input type="text" class="form-control @error('pegawai_id') is-invalid @enderror"
-                                    id="pegawai_nama" value="{{ $pegawai ? $pegawai->nama_pegawai : '-' }}" readonly>
 
-                                <input type="hidden" name="pegawai_id" value="{{ $pegawai ? $pegawai->id : '' }}">
-
-                                @error('pegawai_id')
-                                    <div class="invalid-feedback d-block">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
+                                @push('scripts')
+                                    <script>
+                                        $(document).ready(function() {
+                                            $('#pegawai_id').select2({
+                                                placeholder: '-- Pilih Pegawai --',
+                                                allowClear: true,
+                                                width: '100%'
+                                            });
+                                        });
+                                    </script>
+                                @endpush
                             @else
                                 <input type="hidden" name="pegawai_id" value="{{ $skpReport->pegawai_id }}">
                                 <input type="text" class="form-control"
-                                    value="{{ $skpReport->pegawai->nama_pegawai ?? '' }} (NIP: {{ $skpReport->pegawai->nip ?? '' }}) - {{ $skpReport->pegawai->position->nama_jabatan ?? 'N/A' }}"
+                                    value="{{ $skpReport->pegawai->nama_pegawai ?? '' }} (NIP: {{ $skpReport->pegawai->nip ?? '' }})"
                                     readonly>
                             @endif
                             @error('pegawai_id')
@@ -107,17 +108,35 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="penilai_id" class="form-label">Pejabat Penilai Kinerja</label>
-                            <select name="penilai_id" id="penilai_id"
-                                class="form-select @error('penilai_id') is-invalid @enderror"
-                                {{ $role !== 'admin' && $role !== 'pegawai_unit_kerja' ? 'readonly' : '' }} required>
-                                <option value="">-- Pilih Penilai --</option>
-                                @foreach ($penilaiOptions as $penilai)
-                                    <option value="{{ $penilai->id }}" @selected(old('penilai_id', $skpReport->penilai_id) == $penilai->id)>
-                                        {{ $penilai->nama_pegawai }} (NIP: {{ $penilai->nip }}) -
-                                        {{ $penilai->position->nama_jabatan ?? 'N/A' }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            @if ($user->role === 'admin')
+                                <select name="penilai_id" id="penilai_id"
+                                    class="form-select select2 @error('penilai_id') is-invalid @enderror"
+                                    {{ $role !== 'admin' && $role !== 'pegawai_unit_kerja' ? 'readonly' : '' }} required>
+                                    <option value="">-- Pilih Penilai --</option>
+                                    @foreach ($penilaiOptions as $penilai)
+                                        <option value="{{ $penilai->id }}" @selected(old('penilai_id', $skpReport->penilai_id) == $penilai->id)>
+                                            {{ $penilai->nama_pegawai }} (NIP: {{ $penilai->nip }}) -
+                                            {{ $penilai->position->nama_jabatan ?? 'N/A' }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @push('scripts')
+                                    <script>
+                                        $(document).ready(function() {
+                                            $('#penilai_id').select2({
+                                                placeholder: '-- Pilih Penilai --',
+                                                allowClear: true,
+                                                width: '100%'
+                                            });
+                                        });
+                                    </script>
+                                @endpush
+                            @else
+                                <input type="hidden" name="penilai_id" value="{{ $skpReport->penilai_id }}">
+                                <input type="text" class="form-control"
+                                    value="{{ $skpReport->penilai->nama_pegawai ?? '' }} (NIP: {{ $skpReport->penilai->nip ?? '' }})"
+                                    readonly>
+                            @endif
                             @error('penilai_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror

@@ -209,7 +209,7 @@
                                                 <a href="<?php echo e(route('skp.print', $skpReport->id)); ?>"
                                                     class="btn btn-sm btn-success" target="_blank">Cetak</a>
                                             <?php endif; ?>
-                                            <?php if($skpReport->status !== 'approved'): ?>
+                                            <?php if($skpReport->status != 'approved' && $skpReport->status != 'approved_stage_1'): ?>
                                                 <a href="<?php echo e(route('skp.edit', $skpReport->id)); ?>"
                                                     class="btn btn-sm btn-info" title="Edit Data">
                                                     <i class="bi bi-pencil-square"></i> Edit
