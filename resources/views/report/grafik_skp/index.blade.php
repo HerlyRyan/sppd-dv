@@ -21,7 +21,7 @@
     <script>
         const skpData = @json($data);
 
-        const labels = skpData.map(item => item.nama_pegawai);
+        const labels = skpData.map(item => item.unit_kerja);
         console.log()
         const values = skpData.map(item => item.total_skp);
 

@@ -1,10 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-    @php
-        $user = Auth::user();
-        $pegawai = \App\Models\Employee::where('nip', $user->username)->first();
-    @endphp
     <div class="container py-4">
         <div class="card shadow-sm">
             <div class="card-header bg-primary text-white">
@@ -63,13 +59,12 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                        @if ($user->role == 'admin')
-                            <div class="col-md-6 mb-3">
-                                <label for="pegawai_id" class="form-label">Pegawai Yang Dinilai</label>
+                        <div class="col-md-6 mb-3">
+                            <label for="pegawai_id" class="form-label">Pegawai Yang Dinilai</label>
+                            @if ($user->role == 'admin')
                                 <select name="pegawai_id" id="pegawai_id"
-                                    class="form-select @error('pegawai_id') is-invalid @enderror" required>
+                                    class="form-select select2 @error('pegawai_id') is-invalid @enderror" required>
                                     <option value="" selected>-- Pilih Pegawai --</option>
-                                    {{-- $pegawaiOptions harus disediakan dari controller, berisi user dengan jabatan bukan kepala bidang --}}
                                     @foreach ($pegawaiOptions as $pegawai)
                                         <option value="{{ $pegawai->id }}" @selected(old('pegawai_id') == $pegawai->id)>
                                             {{ $pegawai->nama_pegawai }} (NIP: {{ $pegawai->nip }}) -
@@ -77,13 +72,22 @@
                                         </option>
                                     @endforeach
                                 </select>
+
+                                @push('scripts')
+                                    <script>
+                                        $(document).ready(function() {
+                                            $('#pegawai_id').select2({
+                                                placeholder: '-- Pilih Pegawai --',
+                                                allowClear: true,
+                                                width: '100%'
+                                            });
+                                        });
+                                    </script>
+                                @endpush
                                 @error('pegawai_id')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
-                            </div>
-                        @else
-                            <div class="col-md-6 mb-3">
-                                <label for="pegawai_id" class="form-label">Pegawai Yang Dinilai</label>
+                            @else
                                 <input type="text" class="form-control @error('pegawai_id') is-invalid @enderror"
                                     id="pegawai_nama" value="{{ $pegawai ? $pegawai->nama_pegawai : '-' }}" readonly>
 
@@ -94,24 +98,49 @@
                                         {{ $message }}
                                     </div>
                                 @enderror
-                            </div>
-                        @endif
+                            @endif
+                        </div>
                         <div class="col-md-6 mb-3">
                             <label for="penilai_id" class="form-label">Pejabat Penilai Kinerja</label>
-                            <select name="penilai_id" id="penilai_id"
-                                class="form-select @error('penilai_id') is-invalid @enderror" required>
-                                <option value="" selected>-- Pilih Penilai --</option>
-                                {{-- $penilaiOptions harus disediakan dari controller, berisi user dengan jabatan kepala bidang --}}
-                                @foreach ($penilaiOptions as $penilai)
-                                    <option value="{{ $penilai->id }}" @selected(old('penilai_id') == $penilai->id)>
-                                        {{ $penilai->nama_pegawai }} (NIP: {{ $penilai->nip }}) -
-                                        {{ $penilai->functional_position->nama_jabatan_fungsional }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('penilai_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            @if ($user->role === 'admin')
+                                <select name="penilai_id" id="penilai_id"
+                                    class="form-select select2 @error('penilai_id') is-invalid @enderror" required>
+                                    <option value="" selected>-- Pilih Penilai --</option>
+                                    {{-- $penilaiOptions harus disediakan dari controller, berisi user dengan jabatan kepala bidang --}}
+                                    @foreach ($penilaiOptions as $penilai)
+                                        <option value="{{ $penilai->id }}" @selected(old('penilai_id') == $penilai->id)>
+                                            {{ $penilai->nama_pegawai }} (NIP: {{ $penilai->nip }}) -
+                                            {{ $penilai->functional_position->nama_jabatan_fungsional }}
+                                        </option>
+                                    @endforeach
+                                </select>
+
+                                @push('scripts')
+                                    <script>
+                                        $(document).ready(function() {
+                                            $('#penilai_id').select2({
+                                                placeholder: '-- Pilih Penilai --',
+                                                allowClear: true,
+                                                width: '100%'
+                                            });
+                                        });
+                                    </script>
+                                @endpush
+                                @error('penilai_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            @else
+                                <input type="text" class="form-control @error('penilai_id') is-invalid @enderror"
+                                    id="penilai_nama" value="{{ $penilai ? $penilai->nama_pegawai : '-' }}" readonly>
+
+                                <input type="hidden" name="penilai_id" value="{{ $penilai ? $penilai->id : '' }}">
+
+                                @error('penilai_id')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            @endif
                         </div>
                     </div>
 

@@ -5,7 +5,7 @@
         <thead>
             <tr>
                 <th>No</th>
-                <th>Nama Pegawai</th>
+                <th>Unit Kerja</th>
                 <th>Jumlah SKP</th>
             </tr>
         </thead>
@@ -13,7 +13,7 @@
             @foreach ($data as $index => $item)
                 <tr>
                     <td>{{ $index + 1 }}</td>
-                    <td>{{ $item->nama_pegawai }}</td>
+                    <td>{{ $item->unit_kerja }}</td>
                     <td>{{ $item->total_skp }}</td>
                 </tr>
             @endforeach

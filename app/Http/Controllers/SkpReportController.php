@@ -73,7 +73,8 @@ class SkpReportController extends Controller
      * @return \Illuminate\View\View
      */
     public function create()
-    {        
+    {
+        $user = Auth::user();
         // Mendapatkan ID posisi yang mengandung kata "KETUA"
         $kepalaPosisiIds = FunctionalPosition::where('nama_jabatan_fungsional', 'LIKE', '%KEPALA%')->pluck('id');
 
@@ -87,9 +88,16 @@ class SkpReportController extends Controller
         $penilaiOptions = Employee::whereIn('functional_position_id', $kepalaPosisiIds)
             ->with('functional_position') // Eager load position untuk ditampilkan di view
             ->orderBy('nama_pegawai') // Menggunakan 'nama_pegawai' sesuai model Employee yang diberikan
-            ->get();        
+            ->get();
 
-        return view('skp_reports.create', compact('pegawaiOptions', 'penilaiOptions'));
+        $pegawai = '';
+        $penilai = '';
+        if ($user->role !== 'admin') {
+            $pegawai = Employee::where('nip', $user->username)->first();
+            $penilai = Employee::whereIn('functional_position_id', $kepalaPosisiIds)->where('agency_id', $pegawai->agency_id)->first();
+        }
+
+        return view('skp_reports.create', compact('pegawaiOptions', 'penilaiOptions', 'pegawai', 'penilai', 'user'));
     }
 
     /**
