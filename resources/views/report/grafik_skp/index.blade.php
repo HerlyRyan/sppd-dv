@@ -6,9 +6,24 @@
             <div class="row">
                 <div class="col">Grafik Perbandingan SKP Antar Pegawai</div>
                 <div class="col d-flex justify-content-end">
+
                     <a href="{{ route('laporan.grafik-skp.print') }}" target="_blank" class="btn btn-primary">Cetak</a>
                 </div>
             </div>
+            <form method="GET" action="{{ route('laporan.grafik-skp.index') }}" class="mb-3">
+                <div class="row">
+                    <div class="col-md-3">
+                        <select name="tahun" class="form-control" onchange="this.form.submit()">
+                            <option value="">Semua Tahun</option>
+                            @foreach ($tahunList as $tahun)
+                                <option value="{{ $tahun }}" {{ request('tahun') == $tahun ? 'selected' : '' }}>
+                                    {{ $tahun }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            </form>
         </div>
         <div class="card-body">
             <canvas id="skpChart"></canvas>
@@ -40,6 +55,22 @@
             },
             options: {
                 scales: {
+                    x: {
+                        ticks: {
+                            callback: function(value, index, ticks) {
+                                const label = this.chart.data.labels[index];
+                                const words = label.split(' ');
+                                const lines = [];
+
+                                // Gabungkan tiap 2 kata jadi satu baris
+                                for (let i = 0; i < words.length; i += 2) {
+                                    lines.push(words.slice(i, i + 2).join(' '));
+                                }
+
+                                return lines;
+                            }
+                        }
+                    },
                     y: {
                         beginAtZero: true
                     }

@@ -60,6 +60,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
         Route::get('/sppd-per-bulan', [ReportController::class, 'sppdPerBulan'])->name('sppd-per-bulan.index');
         Route::get('/sppd-per-bulan/print', [ReportController::class, 'printSppdPerBulan'])->name('sppd-per-bulan.print');
+
+        Route::get('/skp', [ReportController::class, 'indexSKP'])->name('skp.index');
+        Route::get('/skp/print', [ReportController::class, 'printSKP'])->name('skp.print');
     });
 });
 
@@ -67,8 +70,12 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 Route::middleware(['auth', 'role:admin,pegawai_bkn'])->group(function () {
     Route::get('/buat-surat', fn() => view('surat'))->name('surat.index');
     Route::get('/history-surat', fn() => view('history', [
-        'items' => DB::table('surat')->paginate(20)
+        'items' => DB::table('surat')->paginate(10)
     ]));
+    Route::delete('/history-surat/{id}', function ($id) {
+        DB::table('surat')->where('id', $id)->delete();
+        return redirect('/history-surat')->with('success', 'Data surat berhasil dihapus.');
+    })->name('history.destroy');
 
     Route::resource('sppd', SppdController::class);
     Route::get('sppd/{sppd}/buat', [SppdController::class, 'buat_surat'])->name('sppd.buat-surat');

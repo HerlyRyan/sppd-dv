@@ -185,6 +185,18 @@
                                                 </a>
                                             </div>
                                         <?php endif; ?>
+                                        <?php if(
+                                            $item->submission_flag == 'N' &&
+                                                ($item->approval_status == 'N' || $item->approval_status == 'R') &&
+                                                Auth::user()->role == 'admin'): ?>
+                                            <div>
+                                                <form action="<?php echo e(route('sppd.destroy', $item)); ?>" method="POST">
+                                                    <?php echo csrf_field(); ?>
+                                                    <?php echo method_field('delete'); ?>
+                                                    <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+                                                </form>
+                                            </div>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>

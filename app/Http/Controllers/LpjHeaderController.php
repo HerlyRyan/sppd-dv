@@ -155,7 +155,9 @@ class LpjHeaderController extends Controller
      */
     public function destroy(LpjHeader $lpjHeader)
     {
-        //
+        $lpjHeader->delete();
+
+        return redirect()->route('lpj-header.index')->with('success', 'LPJ berhasil dihapus');
     }
 
     public function submit(LpjHeader $lpj_header)

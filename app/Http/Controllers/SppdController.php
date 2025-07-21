@@ -54,8 +54,8 @@ class SppdController extends Controller
             'tanggal_kembali'   => 'required',
             'pejabat_pembuat_komitmen' => 'required',
             'biaya_sppd'        => 'required',
-            'flag_buat_surat'        => 'N',
-            'flag_lpj'        => 'N',
+            'flag_buat_surat'   => 'N',
+            'flag_lpj'          => 'N',
         ]);
 
         Sppd::create($validated);

@@ -101,25 +101,33 @@
                                             class="hide-menu">SKP</span></a></li>
 
                                 <li class="nav-small-cap"><span class="hide-menu">Laporan</span></li>
-                                <li class="sidebar-item"><a class="sidebar-link {{ Request::is('laporan.pegawai.*') ? 'active' : '' }}"
+                                <li class="sidebar-item"><a
+                                        class="sidebar-link {{ Request::is('laporan.pegawai.*') ? 'active' : '' }}"
                                         href="{{ route('laporan.pegawai.index') }}"><i class="ti ti-report"></i><span
                                             class="hide-menu">Pegawai</span></a></li>
+                                <li class="sidebar-item"><a
+                                        class="sidebar-link {{ Request::is('laporan.grafik-skp.*') ? 'active' : '' }}"
+                                        href="{{ route('laporan.skp.index') }}"><i class="ti ti-report"></i><span
+                                            class="hide-menu">SKP</span></a></li>
                                 <li class="sidebar-item"><a
                                         class="sidebar-link {{ Request::is('laporan.grafik-skp.*') ? 'active' : '' }}"
                                         href="{{ route('laporan.grafik-skp.index') }}"><i class="ti ti-report"></i><span
                                             class="hide-menu">Perbandingan SKP</span></a></li>
                                 <li class="sidebar-item"><a
                                         class="sidebar-link {{ Request::is('laporan.ringkasan-kinerja*') ? 'active' : '' }}"
-                                        href="{{ route('laporan.ringkasan-kinerja.index') }}"><i class="ti ti-report"></i><span
-                                            class="hide-menu">Ringkasan Kinerja</span></a></li>
+                                        href="{{ route('laporan.ringkasan-kinerja.index') }}"><i
+                                            class="ti ti-report"></i><span class="hide-menu">Ringkasan Kinerja</span></a>
+                                </li>
                                 <li class="sidebar-item"><a
                                         class="sidebar-link {{ Request::is('laporan.kehadiran-tahunan*') ? 'active' : '' }}"
-                                        href="{{ route('laporan.kehadiran-tahunan.index') }}"><i class="ti ti-report"></i><span
-                                            class="hide-menu">Kehadiran Tahunan Pegawai</span></a></li>
+                                        href="{{ route('laporan.kehadiran-tahunan.index') }}"><i
+                                            class="ti ti-report"></i><span class="hide-menu">Kehadiran Tahunan
+                                            Pegawai</span></a></li>
                                 <li class="sidebar-item"><a
                                         class="sidebar-link {{ Request::is('laporan.sppd-per-bulan*') ? 'active' : '' }}"
-                                        href="{{ route('laporan.sppd-per-bulan.index') }}"><i class="ti ti-report"></i><span
-                                            class="hide-menu">Rekapitulasi SPPD</span></a></li>
+                                        href="{{ route('laporan.sppd-per-bulan.index') }}"><i
+                                            class="ti ti-report"></i><span class="hide-menu">Rekapitulasi SPPD</span></a>
+                                </li>
                             @endif
 
                             {{-- Pegawai Unit Kerja --}}

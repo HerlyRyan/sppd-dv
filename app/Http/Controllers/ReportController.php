@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
+use App\Models\SkpReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -35,12 +36,54 @@ class ReportController extends Controller
         return view('report.pegawai.print', compact('items'));
     }
 
-    public function grafikSKPAntarPegawai()
+    public function indexSKP()
     {
+        $submittedIds = SkpReport::pluck('pegawai_id')->toArray();
+
+        // Pegawai yang sudah mengumpulkan SKP (gunakan query builder)
+        $sudahMengumpulkan = Employee::with(['position', 'agency', 'unit_kerja'])
+            ->whereIn('id', $submittedIds)
+            ->paginate(5, ['*'], 'sudah'); // Gunakan query param 'sudah' agar tidak bentrok
+
+        // Pegawai yang belum mengumpulkan SKP (gunakan query builder)
+        $belumMengumpulkan = Employee::with(['position', 'agency', 'unit_kerja'])
+            ->whereNotIn('id', $submittedIds)
+            ->paginate(5, ['*'], 'belum');
+
+        return view('report.skp.index', compact('sudahMengumpulkan', 'belumMengumpulkan'));
+    }
+
+    public function printSKP()
+    {
+        $allEmployees = Employee::with(['position', 'agency', 'unit_kerja'])->get();
+        $submittedIds = SkpReport::pluck('pegawai_id')->toArray();
+
+        $sudahMengumpulkan = $allEmployees->whereIn('id', $submittedIds);
+        $belumMengumpulkan = $allEmployees->whereNotIn('id', $submittedIds);
+
+        // View cetak bisa berupa blade biasa atau langsung di-export ke PDF
+        return view('report.skp.print', compact('sudahMengumpulkan', 'belumMengumpulkan'));
+    }
+
+    public function grafikSKPAntarPegawai(Request $request)
+    {
+        // Ambil list tahun dari skp_reports (dari field created_at atau transaction_date, sesuaikan)
+        $tahunList = DB::table('skp_reports')
+            ->selectRaw('YEAR(created_at) as tahun')
+            ->groupByRaw('YEAR(created_at)')
+            ->orderByDesc('tahun')
+            ->pluck('tahun');
+
+        // Ambil filter tahun jika ada
+        $tahun = $request->tahun;
+
         $data = DB::table('skp_reports as s')
             ->join('employees as e', 's.pegawai_id', '=', 'e.id')
             ->join('positions as p', 'e.position_id', '=', 'p.id')
             ->join('agencies as a', 'e.agency_id', '=', 'a.id')
+            ->when($tahun, function ($query) use ($tahun) {
+                $query->whereYear('s.created_at', $tahun); // atau 's.transaction_date' jika pakai field itu
+            })
             ->select(
                 'e.nama_pegawai',
                 'p.nama_jabatan',
@@ -50,16 +93,21 @@ class ReportController extends Controller
             ->groupBy('e.id', 'e.nama_pegawai', 'p.nama_jabatan', 'a.instansi')
             ->get();
 
-
-        return view('report.grafik_skp.index', compact('data'));
+        return view('report.grafik_skp.index', compact('data', 'tahunList'));
     }
 
-    public function printGrafikSKPAntarPegawai()
+    public function printGrafikSKPAntarPegawai(Request $request)
     {
+        // Ambil filter tahun jika ada
+        $tahun = $request->tahun;
+
         $data = DB::table('skp_reports as s')
             ->join('employees as e', 's.pegawai_id', '=', 'e.id')
             ->join('positions as p', 'e.position_id', '=', 'p.id')
             ->join('agencies as a', 'e.agency_id', '=', 'a.id')
+            ->when($tahun, function ($query) use ($tahun) {
+                $query->whereYear('s.created_at', $tahun); // atau 's.transaction_date' jika pakai field itu
+            })
             ->select(
                 'e.nama_pegawai',
                 'p.nama_jabatan',

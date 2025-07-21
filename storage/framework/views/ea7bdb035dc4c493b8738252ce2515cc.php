@@ -2,6 +2,12 @@
 
 <?php $__env->startSection('content'); ?>
     <div class="card">
+        <?php if(session('success')): ?>
+            <div class="alert alert-success mb-3" role="alert">
+                <?php echo e(session('success')); ?>
+
+            </div>
+        <?php endif; ?>
         <div class="card-header">
             History Surat
         </div>
@@ -26,11 +32,20 @@
                                 <td><?php echo e($item->no_surat); ?></td>
                                 <td><?php echo e($item->jenis_surat); ?></td>
                                 <td><?php echo e($item->tanggal_surat); ?></td>
-                                <td>
-                                    <a href="<?php echo e(asset('storage/surat/' . $item->nama_file)); ?>"
-                                        class="btn btn-sm btn-success" target="_blank">
+                                <td class="d-flex gap-1">
+                                    <a href="<?php echo e(asset('storage/surat/' . $item->nama_file)); ?>" class="btn btn-sm btn-success"
+                                        target="_blank">
                                         Lihat
                                     </a>
+                                    <?php if(Auth::user()->role == 'admin'): ?>
+                                        <div>
+                                            <form action="<?php echo e(route('history.destroy', $item->id)); ?>" method="POST">
+                                                <?php echo csrf_field(); ?>
+                                                <?php echo method_field('delete'); ?>
+                                                <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+                                            </form>
+                                        </div>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>

@@ -85,7 +85,7 @@
                                         @endif
                                     </td>
                                     <td>
-                                        {{$item->reject_reason ?? 'Tidak ada'}}
+                                        {{ $item->reject_reason ?? 'Tidak ada' }}
                                     </td>
                                     </td>
                                     <td>{{ $item->approval_date }}</td>
@@ -182,6 +182,18 @@
                                                     class="btn btn-sm btn-success">
                                                     Download
                                                 </a>
+                                            </div>
+                                        @endif
+                                        @if (
+                                            $item->submission_flag == 'N' &&
+                                                ($item->approval_status == 'N' || $item->approval_status == 'R') &&
+                                                Auth::user()->role == 'admin')
+                                            <div>
+                                                <form action="{{ route('lpj-header.destroy', $item) }}" method="POST">
+                                                    @csrf
+                                                    @method('delete')
+                                                    <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+                                                </form>
                                             </div>
                                         @endif
                                     </td>
