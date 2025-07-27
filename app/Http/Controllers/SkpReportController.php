@@ -67,6 +67,34 @@ class SkpReportController extends Controller
         return view('skp_reports.index', compact('skpReports'));
     }
 
+    public function indexPimpinan()
+    {
+        $user = Auth::user();
+
+        // Dapatkan ID pegawai yang sudah mengumpulkan SKP
+        $submittedIds = SkpReport::pluck('pegawai_id')->unique();
+
+        // Query untuk pegawai yang belum mengumpulkan SKP
+        $belumQuery = Employee::with(['functional_position', 'agency'])
+            ->whereNotIn('id', $submittedIds);
+
+        // Filter berdasarkan role untuk pegawai yang belum mengumpulkan
+        if (!in_array($user->role, ['admin', 'pimpinan_bkn'])) {
+            $pegawai = Employee::where('nip', $user->username)->first();
+            
+            if ($pegawai && $user->role === 'pimpinan_unit_kerja') {
+            $belumQuery->where('agency_id', $pegawai->agency_id);
+            } elseif ($pegawai && $user->role === 'pegawai_unit_kerja') {
+            $belumQuery->where('id', $pegawai->id);
+            } else {
+            $belumQuery->whereRaw('1 = 0');
+            }
+        }
+
+        $belumMengumpulkan = $belumQuery->paginate(10);
+        return view('skp_reports.not-submit', compact('belumMengumpulkan'));
+    }
+
     /**
      * Menampilkan formulir untuk membuat laporan SKP baru.
      *

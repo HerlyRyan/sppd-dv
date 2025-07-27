@@ -93,6 +93,7 @@ Route::middleware(['auth', 'role:admin,pegawai_bkn'])->group(function () {
 
 Route::middleware(['auth', 'role:pimpinan_unit_kerja'])->group(function () {
     Route::post('skp/approve/{skpReport}', [SkpReportController::class, 'approve_stage_one'])->name('skp.approved_stage_one');
+    Route::get('skp/notsubmit', [SkpReportController::class, 'indexPimpinan'])->name('skp.not-submit');
 });
 
 Route::middleware(['auth', 'role:pimpinan_bkn'])->group(function () {

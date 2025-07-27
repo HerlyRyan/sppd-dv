@@ -140,10 +140,16 @@
 
                             {{-- Pimpinan Unit Kerja --}}
                             @if ($role === 'pimpinan_unit_kerja')
-                                <li class="sidebar-item"><a
-                                        class="sidebar-link {{ Request::is('skp*') ? 'active' : '' }}"
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link {{ Request::is('skp.index') ? 'active' : '' }}"
                                         href="{{ route('skp.index') }}"><i class="ti ti-checkup-list"></i><span
-                                            class="hide-menu">Penilaian SKP Unit</span></a></li>
+                                            class="hide-menu">Penilaian SKP Unit</span></a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link {{ Request::is('skp.not-submit') ? 'active' : '' }}"
+                                        href="{{ route('skp.not-submit') }}"><i class="ti ti-checkup-list"></i><span
+                                            class="hide-menu">Belum Mengumpul SKP</span></a>
+                                </li>
                             @endif
 
                             {{-- Pimpinan BKN --}}
